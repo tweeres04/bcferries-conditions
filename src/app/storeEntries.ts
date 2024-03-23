@@ -47,8 +47,6 @@ function emptyStringsToNull(record: ConditionsResult) {
 export async function getConditions() {
 	'use server'
 
-	console.log('getConditions')
-
 	let { data } = await scrapeIt<{ entries: ConditionsResult[] }>(
 		'https://www.bcferries.com/current-conditions/SWB-TSA',
 		{
@@ -91,15 +89,11 @@ export async function getConditions() {
 	)
 	let data_ = data.entries.map(emptyStringsToNull)
 
-	console.log('got conditions')
-
 	return data_
 }
 
 export async function storeEntries() {
 	const entries = await getConditions()
-
-	console.log('storing entries')
 
 	await Promise.all(
 		entries.map((e) => {
@@ -121,6 +115,4 @@ export async function storeEntries() {
 			})
 		})
 	)
-
-	console.log('stored entries')
 }
