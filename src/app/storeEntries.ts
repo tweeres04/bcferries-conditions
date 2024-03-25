@@ -2,6 +2,7 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import scrapeIt from 'scrape-it'
 import { addDays, formatISO } from 'date-fns'
+import { utcToZonedTime } from 'date-fns-tz'
 
 import * as schema from '@/schema'
 
@@ -97,10 +98,10 @@ export async function storeEntries() {
 
 	await Promise.all(
 		entries.map((e) => {
-			const date = formatISO(
-				e.isTomorrow ? addDays(new Date(), 1) : new Date(),
-				{ representation: 'date' }
-			)
+			const todayInBc = utcToZonedTime(new Date(), 'America/Vancouver')
+			const date = formatISO(e.isTomorrow ? addDays(todayInBc, 1) : todayInBc, {
+				representation: 'date',
+			})
 			const full = e.fullMessage?.toLowerCase() === 'full' ? true : false
 			return db.insert(schema.entries).values({
 				date,
