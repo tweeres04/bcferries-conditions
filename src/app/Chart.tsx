@@ -6,6 +6,19 @@ import { groupBy, map, orderBy } from 'lodash'
 import { Chart } from 'chart.js/auto'
 import 'chartjs-adapter-date-fns'
 
+function formatTime(timeString: string) {
+	const [hoursString, minutes] = timeString.split(':')
+
+	let hours = Number(hoursString)
+
+	const pm = hours >= 12
+	const amPm = pm ? 'PM' : 'AM'
+
+	hours = hours === 0 || hours === 12 ? 12 : pm ? hours - 12 : hours
+
+	return `${hours}:${minutes} ${amPm}`
+}
+
 type Props = {
 	entries: Entry[]
 }
@@ -23,6 +36,7 @@ function useChart(entries: Entry[], canvasRef: RefObject<HTMLCanvasElement>) {
 			},
 		}))
 		datasets = orderBy(datasets, 'label')
+		datasets = datasets.map((d) => ({ ...d, label: formatTime(d.label) }))
 		let chart: Chart
 		if (canvasRef.current) {
 			chart = new Chart(canvasRef.current, {
@@ -43,6 +57,7 @@ function useChart(entries: Entry[], canvasRef: RefObject<HTMLCanvasElement>) {
 					elements: {
 						point: {
 							radius: 0,
+							hitRadius: 10,
 						},
 					},
 					spanGaps: true,
