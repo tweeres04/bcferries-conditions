@@ -11,7 +11,8 @@ import {
 
 export const entries = pgTable('entries', {
 	id: serial('id').primaryKey(),
-	date: date('date').defaultNow(),
+	route: text('route').notNull(),
+	date: date('date').defaultNow().notNull(),
 	time: time('time').notNull(),
 	vessel: text('vessel').notNull(),
 	overallPercent: numeric('overall_percent'),
@@ -22,3 +23,6 @@ export const entries = pgTable('entries', {
 	departure: time('departure'),
 	timestamp: timestamp('timestamp').defaultNow(),
 })
+
+export type Entry = typeof entries.$inferSelect
+export type NewEntry = typeof entries.$inferInsert
