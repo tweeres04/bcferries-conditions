@@ -43,7 +43,7 @@ export async function getConditions() {
 	const data = await Promise.all(
 		routes.flatMap((route) =>
 			scrapeIt<{ entries: ConditionsResult[] }>(
-				'https://www.bcferries.com/current-conditions/SWB-TSA',
+				`https://www.bcferries.com/current-conditions/${route}`,
 				{
 					entries: {
 						listItem: 'tr.mobile-friendly-row',
