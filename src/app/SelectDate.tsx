@@ -4,7 +4,7 @@ import { Entry } from '@/schema'
 
 type Props = {
 	selectDate: (date: string) => void
-	dates: Entry[]
+	dates: { date: string }[]
 	date: string
 }
 
