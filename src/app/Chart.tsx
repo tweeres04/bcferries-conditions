@@ -51,7 +51,6 @@ function useChart(entries: Entry[], canvasRef: RefObject<HTMLCanvasElement>) {
 						},
 						y: {
 							min: 0,
-							max: 100,
 						},
 					},
 					elements: {
