@@ -78,8 +78,10 @@ export default async function Home({ searchParams }: Props) {
 	return (
 		<div className="container mx-auto">
 			<h1 className="text-2xl">bc ferries conditions</h1>
-			<SelectRoute selectRoute={selectRoute} routes={routes} route={route} />
-			<SelectDate selectDate={selectDate} dates={dates} date={date} />
+			<div className="space-x-1">
+				<SelectRoute selectRoute={selectRoute} routes={routes} route={route} />
+				<SelectDate selectDate={selectDate} dates={dates} date={date} />
+			</div>
 			<Chart entries={results} />
 		</div>
 	)

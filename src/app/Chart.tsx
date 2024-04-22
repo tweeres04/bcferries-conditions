@@ -67,6 +67,7 @@ function useChart(entries: Entry[], canvasRef: RefObject<HTMLCanvasElement>) {
 						},
 					},
 					spanGaps: true,
+					maintainAspectRatio: false,
 				},
 			})
 		}
@@ -82,5 +83,13 @@ function useChart(entries: Entry[], canvasRef: RefObject<HTMLCanvasElement>) {
 export default function HistoryChart({ entries }: Props) {
 	const canvasRef = useRef<HTMLCanvasElement>(null)
 	useChart(entries, canvasRef)
-	return <canvas ref={canvasRef} />
+	return (
+		<div style={{ height: 'calc(100dvh - 32px - 24px)' }}>
+			<canvas
+				ref={canvasRef}
+				aria-label="Chart showing ferry vehicle capacities over time for the day"
+				role="figure"
+			/>
+		</div>
+	)
 }

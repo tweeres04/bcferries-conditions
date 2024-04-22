@@ -1,6 +1,6 @@
 'use client'
 
-import { Entry } from '@/schema'
+import { format } from 'date-fns'
 
 type Props = {
 	selectDate: (date: string) => void
@@ -17,7 +17,9 @@ export default function SelectDate({ selectDate, dates, date }: Props) {
 			defaultValue={date}
 		>
 			{dates.map((d) => (
-				<option key={d.date}>{d.date}</option>
+				<option key={d.date} value={d.date}>
+					{format(d.date, 'E MMM d, yyyy')}
+				</option>
 			))}
 		</select>
 	)

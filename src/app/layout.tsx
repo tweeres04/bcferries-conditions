@@ -4,7 +4,8 @@ import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
-const title = 'BC Ferries Conditions Analytics - Plan your trip stress-free'
+const title =
+	'BC Ferries Conditions Analytics - Plan your ferry ride stress-free'
 const description =
 	"Historical data and analytics tools for BC Ferries' vehicle deck space capacity."
 
