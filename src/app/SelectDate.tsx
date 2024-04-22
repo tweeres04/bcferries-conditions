@@ -1,6 +1,6 @@
 'use client'
 
-import { format } from 'date-fns'
+import { format, isToday, isTomorrow, isYesterday, addHours } from 'date-fns'
 
 type Props = {
 	selectDate: (date: string) => void
@@ -16,11 +16,22 @@ export default function SelectDate({ selectDate, dates, date }: Props) {
 			}}
 			defaultValue={date}
 		>
-			{dates.map((d) => (
-				<option key={d.date} value={d.date}>
-					{format(d.date, 'E MMM d, yyyy')}
-				</option>
-			))}
+			{dates.map((d) => {
+				// Add hours since this runs client side, and timestamp is UTC
+				const dateInBcTime = addHours(new Date(d.date), 7)
+				return (
+					<option key={d.date} value={d.date}>
+						{format(dateInBcTime, 'E MMM d, yyyy')}
+						{isYesterday(dateInBcTime)
+							? ' (yesterday)'
+							: isToday(dateInBcTime)
+							? ' (today)'
+							: isTomorrow(dateInBcTime)
+							? ' (tomorrow)'
+							: ''}
+					</option>
+				)
+			})}
 		</select>
 	)
 }
