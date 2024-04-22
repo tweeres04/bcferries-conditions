@@ -20,7 +20,9 @@ export default function SelectRoute({ selectRoute, routes, route }: Props) {
 			defaultValue={route}
 		>
 			{routes.map((d) => (
-				<option key={d.route}>{routeLabels[d.route]}</option>
+				<option key={d.route} value={d.route}>
+					{routeLabels[d.route]}
+				</option>
 			))}
 		</select>
 	)
