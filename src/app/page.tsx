@@ -83,6 +83,23 @@ export default async function Home({ searchParams }: Props) {
 				<SelectDate selectDate={selectDate} dates={dates} date={date} />
 			</div>
 			<Chart entries={results} />
+			<footer className="text-center py-32">
+				<p>
+					By{' '}
+					<a href="https://tweeres.ca" title="Tyler Weeres">
+						Tyler Weeres
+					</a>
+				</p>
+				<p>
+					Ferry boat icons created by{' '}
+					<a
+						href="https://www.flaticon.com/free-icons/ferry-boat"
+						title="ferry boat icons"
+					>
+						Freepik - Flaticon
+					</a>
+				</p>
+			</footer>
 		</div>
 	)
 }
