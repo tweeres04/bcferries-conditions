@@ -1,9 +1,11 @@
 'use client'
 
+import { useSearchParams } from 'next/navigation'
+
 type Props = {
-	selectRoute: (route: string) => void
+	selectRoute: (searchParams: [string, string][], route: string) => void
 	routes: { route: string }[]
-	route: string
+	defaultValue?: string
 }
 
 const routeLabels = {
@@ -11,15 +13,25 @@ const routeLabels = {
 	'TSA-SWB': 'Tsawwassen to Swartz Bay',
 }
 
-export default function SelectRoute({ selectRoute, routes, route }: Props) {
+export default function SelectRoute({
+	selectRoute,
+	routes,
+	defaultValue,
+}: Props) {
+	const searchParams = useSearchParams()
+	const route = searchParams.get('route') ?? undefined
+
 	return (
 		<select
 			onChange={(event) => {
-				selectRoute(event.target.value)
+				selectRoute(Array.from(searchParams.entries()), event.target.value)
 			}}
-			defaultValue={route}
+			value={route}
+			defaultValue={defaultValue}
+			id="route"
 		>
-			{routes.map((d) => (
+			<option>Select a route</option>
+			{(routes as { route: keyof typeof routeLabels }[]).map((d) => (
 				<option key={d.route} value={d.route}>
 					{routeLabels[d.route]}
 				</option>

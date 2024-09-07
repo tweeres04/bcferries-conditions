@@ -2,11 +2,13 @@ import { and, eq } from 'drizzle-orm'
 import { entries } from '@/schema'
 import { formatISO, subHours } from 'date-fns'
 
-import { getDB } from './getDb'
+import { getDb } from './getDb'
 import Chart from './Chart'
 import { redirect } from 'next/navigation'
 import SelectDate from './SelectDate'
 import SelectRoute from './SelectRoute'
+import { getRoutes } from './getRoutes'
+import { selectValue } from './selectValue'
 
 type Props = {
 	searchParams: {
@@ -16,39 +18,9 @@ type Props = {
 }
 
 export default async function Home({ searchParams }: Props) {
-	const db = getDB()
+	const db = getDb()
 
 	let { date, route } = searchParams
-
-	async function selectDate(newDate: string) {
-		'use server'
-
-		const newSearchParams = {
-			date: newDate,
-			...(route ? { route } : {}),
-		}
-
-		const newUrl = newSearchParams
-			? `/?${new URLSearchParams(newSearchParams)}`
-			: '/'
-
-		redirect(newUrl)
-	}
-
-	async function selectRoute(newRoute: string) {
-		'use server'
-
-		const newSearchParams = {
-			route: newRoute,
-			...(date ? { date } : {}),
-		}
-
-		const newUrl = newSearchParams
-			? `/?${new URLSearchParams(newSearchParams)}`
-			: '/'
-
-		redirect(newUrl)
-	}
 
 	// Find a better approach than -7 offset
 	date = date ?? formatISO(subHours(new Date(), 7), { representation: 'date' })
@@ -59,10 +31,7 @@ export default async function Home({ searchParams }: Props) {
 		.from(entries)
 		.orderBy(entries.date)
 
-	const routesPromise = db
-		.selectDistinct({ route: entries.route })
-		.from(entries)
-		.orderBy(entries.route)
+	const routesPromise = getRoutes()
 
 	const resultsPromise = db.query.entries.findMany({
 		where: and(eq(entries.date, date), eq(entries.route, route)),
@@ -78,9 +47,19 @@ export default async function Home({ searchParams }: Props) {
 	return (
 		<div className="container mx-auto">
 			<h1 className="text-2xl">bc ferries conditions</h1>
-			<div className="space-x-1">
-				<SelectRoute selectRoute={selectRoute} routes={routes} route={route} />
-				<SelectDate selectDate={selectDate} dates={dates} date={date} />
+			<div className="py-1">
+				<SelectRoute
+					selectRoute={selectValue('/', 'route')}
+					routes={routes}
+					defaultValue="SWB-TSA"
+				/>
+				<SelectDate
+					selectDate={selectValue('/', 'date')}
+					dates={dates}
+					defaultValue={formatISO(subHours(new Date(), 7), {
+						representation: 'date',
+					})}
+				/>
 			</div>
 			<Chart entries={results} />
 			<footer className="text-center py-32">

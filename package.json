@@ -7,7 +7,8 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
-		"schema:push": "dotenvx run --env-file=.env.local -- drizzle-kit push:pg"
+		"schema:push": "dotenvx run --env-file=.env.local -- drizzle-kit push:pg",
+		"schema:pull": "dotenvx run --env-file=.env.local -- drizzle-kit introspect:pg"
 	},
 	"dependencies": {
 		"@dotenvx/dotenvx": "^0.26.0",
@@ -23,6 +24,8 @@
 		"scrape-it": "^6.1.0"
 	},
 	"devDependencies": {
+		"@tailwindcss/forms": "^0.5.9",
+		"@tailwindcss/typography": "^0.5.15",
 		"@types/lodash": "^4.17.0",
 		"@types/node": "^20",
 		"@types/react": "^18",

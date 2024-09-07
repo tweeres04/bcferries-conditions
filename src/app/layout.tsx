@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 		description,
 		url,
 		type: 'website',
-		images: 'https://bcferries-conditions.tweeres.ca/og-image.jpg',
+		images: 'https://bcferries-conditions.tweeres.ca/og.png',
 	},
 }
 

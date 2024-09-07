@@ -12,6 +12,6 @@ const queryClient = postgres({
 	ssl: process.env.PGSSL === 'false' ? false : true,
 })
 
-export function getDB() {
+export function getDb() {
 	return drizzle(queryClient, { schema, logger: true })
 }

@@ -6,19 +6,7 @@ import { groupBy, map, orderBy } from 'lodash'
 import { Chart } from 'chart.js/auto'
 import 'chartjs-adapter-date-fns'
 import { formatISO, isToday, addHours } from 'date-fns'
-
-function formatTime(timeString: string) {
-	const [hoursString, minutes] = timeString.split(':')
-
-	let hours = Number(hoursString)
-
-	const pm = hours >= 12
-	const amPm = pm ? 'PM' : 'AM'
-
-	hours = hours === 0 || hours === 12 ? 12 : pm ? hours - 12 : hours
-
-	return `${hours}:${minutes} ${amPm}`
-}
+import { formatTime } from './formatTime'
 
 type Props = {
 	entries: Entry[]
@@ -84,7 +72,7 @@ export default function HistoryChart({ entries }: Props) {
 	const canvasRef = useRef<HTMLCanvasElement>(null)
 	useChart(entries, canvasRef)
 	return (
-		<div style={{ height: 'calc(100dvh - 32px - 24px)' }}>
+		<div style={{ height: 'calc(100dvh - 32px - 50px - 5px)' }}>
 			<canvas
 				ref={canvasRef}
 				aria-label="Chart showing ferry vehicle capacities over time for the day"
