@@ -110,9 +110,6 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 						sailings={sailings}
 						selectSailing={selectValue('/should-i-reserve', 'sailing')}
 					/>
-					<p className="text-sm">
-						To do: make sure sailing actually occurs on that day?
-					</p>
 				</li>
 				{route && date && sailing && dow ? (
 					<>
