@@ -30,7 +30,7 @@ export default function SelectDate({ selectDate, dates, defaultValue }: Props) {
 			value={date ?? undefined}
 			defaultValue={defaultValue}
 		>
-			<option>Select a date</option>
+			<option value="">Select a date</option>
 			{dates.map((d) => {
 				// Add hours since this runs client side, and timestamp is UTC
 				const dateInBcTime = addHours(new Date(d.date), 7)

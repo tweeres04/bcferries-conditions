@@ -20,7 +20,7 @@ export default function SelectSailing({ selectSailing, sailings }: Props) {
 			defaultValue={sailing}
 			id="sailing"
 		>
-			<option>Select a sailing</option>
+			<option value="">Select a sailing</option>
 			{sailings.map((s) => (
 				<option key={s.time} value={s.time}>
 					{formatTime(s.time)}

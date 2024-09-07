@@ -30,7 +30,7 @@ export default function SelectRoute({
 			defaultValue={defaultValue}
 			id="route"
 		>
-			<option>Select a route</option>
+			<option value="">Select a route</option>
 			{(routes as { route: keyof typeof routeLabels }[]).map((d) => (
 				<option key={d.route} value={d.route}>
 					{routeLabels[d.route]}

@@ -7,12 +7,16 @@ export function selectValue(baseUrl: string, key: string) {
 	) {
 		'use server'
 
-		const newSearchParams = {
+		const newSearchParams: Record<string, string> = {
 			...existingSearchParams.reduce(
 				(result, [k, v]) => ({ ...result, [k]: v }),
 				{}
 			),
 			[key]: newValue,
+		}
+
+		if (newValue === '') {
+			delete newSearchParams[key]
 		}
 
 		const newUrl = newSearchParams
