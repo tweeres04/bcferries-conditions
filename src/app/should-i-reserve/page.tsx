@@ -153,10 +153,15 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 							) : null}
 						</li>
 						<li>
-							When you&apos;re ready, make your reservation at{' '}
-							<a href="https://www.bcferries.com/RouteSelectionPage">
-								BC Ferries&apos; reservation page
-							</a>
+							<label>When you&apos;re ready, make your reservation:</label>
+							<ul>
+								<li>
+									BC Ferries&apos;{' '}
+									<a href="https://www.bcferries.com/RouteSelectionPage">
+										reservation page
+									</a>
+								</li>
+							</ul>
 						</li>
 						<p className="text-sm">To do:</p>
 						<ul className="text-sm">
