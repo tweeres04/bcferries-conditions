@@ -9,6 +9,7 @@ import {
 	previousDay,
 	Day,
 	parseISO,
+	getDay,
 } from 'date-fns'
 import { getDb } from '../getDb'
 import { entries } from '@/schema'
@@ -18,6 +19,7 @@ import { formatTime } from '../formatTime'
 import { Metadata } from 'next'
 import { selectValue } from '../selectValue'
 import { getEntriesForDow } from './getEntriesForDow'
+import { getHolidayForDate } from '../holidays'
 
 export async function generateMetadata(): Promise<Metadata> {
 	const title = 'Should I reserve the ferry? - BC Ferries Conditions Analytics'
@@ -78,6 +80,8 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 		dowEntriesPromise,
 	])
 
+	const holiday = date ? getHolidayForDate(date) : undefined
+
 	return (
 		<div className="container mx-auto prose prose-lg px-1 py-2 should-i-reserve">
 			<h1>Should I reserve the ferry?</h1>
@@ -113,6 +117,22 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 				</li>
 				{route && date && sailing && dow !== undefined ? (
 					<>
+						{holiday ? (
+							<li>
+								<label>
+									{format(date, 'E MMM d, yyyy')} is on a long weekend
+								</label>
+								<ul>
+									<li>
+										{holiday.name} on{' '}
+										{format(holiday.observedDate, 'E MMM d, yyyy')}
+									</li>
+									<li>
+										The ferries are typically much busier on long weekends
+									</li>
+								</ul>
+							</li>
+						) : null}
 						<li>
 							<label>
 								Last {format(previousDay(new Date(), dow as Day), 'EEEE')} the{' '}
@@ -134,18 +154,41 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 							<label>Here&apos;s what happened in the last six weeks:</label>
 							{dowEntries ? (
 								<ul>
-									{dowEntries.map((de) => (
-										<li key={de.date}>
-											<div>
-												{format(de.date, 'E MMM d, yyyy')} -{' '}
-												{de.full ? (
-													<>Full at {format(de.full, 'h:mm a')}</>
-												) : (
-													<>Didn&apos;t fill up</>
-												)}
-											</div>
-										</li>
-									))}
+									{dowEntries.map((de) => {
+										const holiday = getHolidayForDate(de.date)
+										return (
+											<li
+												key={de.date}
+												className={
+													holiday
+														? 'text-blue-950 marker:text-blue-200'
+														: undefined
+												}
+											>
+												<div className="flex place-items-center gap-3">
+													{format(de.date, 'E MMM d, yyyy')} -{' '}
+													{de.full ? (
+														<>Full at {format(de.full, 'h:mm a')}</>
+													) : (
+														<>Didn&apos;t fill up</>
+													)}{' '}
+													{holiday ? (
+														<span
+															className="text-sm bg-blue-100 px-2 py-1 rounded-sm"
+															title={`${holiday.name} on ${format(
+																holiday.observedDate,
+																'E MMM d, yyyy'
+															)}`}
+														>
+															{getDay(de.date) === 3
+																? 'Holiday'
+																: 'Long weekend'}
+														</span>
+													) : null}
+												</div>
+											</li>
+										)
+									})}
 								</ul>
 							) : null}
 						</li>
@@ -163,7 +206,6 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 						<p className="text-sm">To do:</p>
 						<ul className="text-sm">
 							<li>give recommendation to reserve or not</li>
-							<li>account for long weekends</li>
 						</ul>
 					</>
 				) : null}
