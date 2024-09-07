@@ -1,14 +1,35 @@
+import { Metadata } from 'next'
 import { and, eq } from 'drizzle-orm'
 import { entries } from '@/schema'
 import { formatISO, subHours } from 'date-fns'
 
 import { getDb } from './getDb'
 import Chart from './Chart'
-import { redirect } from 'next/navigation'
 import SelectDate from './SelectDate'
 import SelectRoute from './SelectRoute'
 import { getRoutes } from './getRoutes'
 import { selectValue } from './selectValue'
+
+const title =
+	'BC Ferries Conditions Analytics - Plan your ferry ride stress-free'
+const description =
+	"Historical data and analytics tools for BC Ferries' vehicle deck space capacity."
+const url = 'https://bcferries-conditions.tweeres.ca'
+
+export const metadata: Metadata = {
+	title,
+	description,
+	alternates: {
+		canonical: url,
+	},
+	openGraph: {
+		title,
+		description,
+		url,
+		type: 'website',
+		images: 'https://bcferries-conditions.tweeres.ca/og.png',
+	},
+}
 
 type Props = {
 	searchParams: {

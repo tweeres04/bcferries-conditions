@@ -22,7 +22,7 @@ import { getEntriesForDow } from './getEntriesForDow'
 export async function generateMetadata(): Promise<Metadata> {
 	const title = 'Should I book the ferry? - BC Ferries Conditions Analytics'
 	const description =
-		'Use past sailing capacities to decide whether to book or not.'
+		'Use past sailing capacities to decide whether to book. Enter your route, date, and sailing time and learn how full the ferry got over the past few weeks.'
 	const url = 'https://bcferries-conditions.tweeres.ca/should-i-book'
 
 	return {
