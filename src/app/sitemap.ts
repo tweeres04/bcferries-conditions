@@ -6,7 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 			url: 'https://bcferries-conditions.tweeres.ca',
 		},
 		{
-			url: 'https://bcferries-conditions.tweeres.ca/should-i-book',
+			url: 'https://bcferries-conditions.tweeres.ca/should-i-reserve',
 		},
 	]
 }

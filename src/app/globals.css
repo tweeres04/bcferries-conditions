@@ -10,7 +10,7 @@ select {
 	@apply border-0 border-b-2 border-gray-200 focus:border-black focus:ring-0 w-full sm:w-auto;
 }
 
-.should-i-book {
+.should-i-reserve {
 	label {
 		@apply font-bold block;
 	}

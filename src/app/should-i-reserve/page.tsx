@@ -20,10 +20,10 @@ import { selectValue } from '../selectValue'
 import { getEntriesForDow } from './getEntriesForDow'
 
 export async function generateMetadata(): Promise<Metadata> {
-	const title = 'Should I book the ferry? - BC Ferries Conditions Analytics'
+	const title = 'Should I reserve the ferry? - BC Ferries Conditions Analytics'
 	const description =
-		'Use past sailing capacities to decide whether to book. Enter your route, date, and sailing time and learn how full the ferry got over the past few weeks.'
-	const url = 'https://bcferries-conditions.tweeres.ca/should-i-book'
+		'Enter your route, date, and sailing time and learn how full the ferry got over the past few weeks. Use past sailing info to decide whether to reserve.'
+	const url = 'https://bcferries-conditions.tweeres.ca/should-i-reserve'
 
 	return {
 		title,
@@ -36,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
 			description,
 			url,
 			type: 'website',
-			images: 'https://bcferries-conditions.tweeres.ca/should-i-book-og.png',
+			images: 'https://bcferries-conditions.tweeres.ca/should-i-reserve-og.png',
 		},
 	}
 }
@@ -59,7 +59,7 @@ type Props = {
 	}
 }
 
-export default async function ShouldIBook({ searchParams }: Props) {
+export default async function ShouldIReserve({ searchParams }: Props) {
 	const routesPromise = getRoutes()
 	const sailingsPromise = getSailings()
 
@@ -79,14 +79,14 @@ export default async function ShouldIBook({ searchParams }: Props) {
 	])
 
 	return (
-		<div className="container mx-auto prose prose-lg px-1 py-2 should-i-book">
-			<h1>Should I book the ferry?</h1>
+		<div className="container mx-auto prose prose-lg px-1 py-2 should-i-reserve">
+			<h1>Should I reserve the ferry?</h1>
 			<ol>
 				<li>
 					<label htmlFor="route">What route?</label>
 					<SelectRoute
 						routes={routes}
-						selectRoute={selectValue('/should-i-book', 'route')}
+						selectRoute={selectValue('/should-i-reserve', 'route')}
 					/>
 				</li>
 				<li>
@@ -100,7 +100,7 @@ export default async function ShouldIBook({ searchParams }: Props) {
 								representation: 'date',
 							}),
 						}))}
-						selectDate={selectValue('/should-i-book', 'date')}
+						selectDate={selectValue('/should-i-reserve', 'date')}
 					/>
 				</li>
 
@@ -108,7 +108,7 @@ export default async function ShouldIBook({ searchParams }: Props) {
 					<label htmlFor="sailing">What sailing?</label>
 					<SelectSailing
 						sailings={sailings}
-						selectSailing={selectValue('/should-i-book', 'sailing')}
+						selectSailing={selectValue('/should-i-reserve', 'sailing')}
 					/>
 					<p className="text-sm">
 						To do: make sure sailing actually occurs on that day?
@@ -154,7 +154,7 @@ export default async function ShouldIBook({ searchParams }: Props) {
 						</li>
 						<p className="text-sm">To do:</p>
 						<ul className="text-sm">
-							<li>give recommendation to book or not</li>
+							<li>give recommendation to reserve or not</li>
 							<li>account for long weekends</li>
 						</ul>
 					</>
