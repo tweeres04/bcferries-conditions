@@ -111,7 +111,7 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 						selectSailing={selectValue('/should-i-reserve', 'sailing')}
 					/>
 				</li>
-				{route && date && sailing && dow ? (
+				{route && date && sailing && dow !== undefined ? (
 					<>
 						<li>
 							<label>
