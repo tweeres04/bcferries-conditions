@@ -2,7 +2,7 @@ import scrapeIt from 'scrape-it'
 import { addDays, formatISO, subHours } from 'date-fns'
 
 import * as schema from '@/schema'
-import { getDB } from './getDb'
+import { getDb } from './getDb'
 
 type ConditionsResult = {
 	time: string | null
@@ -95,7 +95,7 @@ export async function getConditions() {
 
 export async function storeEntries() {
 	const entries = await getConditions()
-	const db = getDB()
+	const db = getDb()
 
 	await Promise.all(
 		entries.map((e) => {
