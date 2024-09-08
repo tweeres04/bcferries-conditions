@@ -1,8 +1,8 @@
-import { Inter } from 'next/font/google'
+import { Poppins } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const poppins = Poppins({ subsets: ['latin'], weight: '400' })
 
 export default function RootLayout({
 	children,
@@ -11,7 +11,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={inter.className}>
+			<body className={poppins.className}>
 				<Script
 					async
 					src="https://www.googletagmanager.com/gtag/js?id=G-F7KKD021M0"
