@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
 import { entries } from '@/schema'
 import { formatISO, subHours } from 'date-fns'
 
@@ -35,17 +35,19 @@ type Props = {
 	searchParams: {
 		date?: string
 		route?: string
+		sailings?: string | string[]
 	}
 }
 
 export default async function Home({ searchParams }: Props) {
 	const db = getDb()
 
-	let { date, route } = searchParams
+	let { date, route, sailings: sailingsParam } = searchParams
 
 	// Find a better approach than -7 offset
 	date = date ?? formatISO(subHours(new Date(), 7), { representation: 'date' })
 	route = route ?? 'SWB-TSA'
+	const sailings = sailingsParam ? [sailingsParam].flat() : undefined
 
 	const datesPromise = db
 		.selectDistinct({ date: entries.date })
@@ -55,7 +57,11 @@ export default async function Home({ searchParams }: Props) {
 	const routesPromise = getRoutes()
 
 	const resultsPromise = db.query.entries.findMany({
-		where: and(eq(entries.date, date), eq(entries.route, route)),
+		where: and(
+			eq(entries.date, date),
+			eq(entries.route, route),
+			sailings ? inArray(entries.time, sailings) : undefined
+		),
 		orderBy: entries.timestamp,
 	})
 

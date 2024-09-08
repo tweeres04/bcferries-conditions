@@ -156,6 +156,11 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 								<ul>
 									{dowEntries.map((de) => {
 										const holiday = getHolidayForDate(de.date)
+										const linkParams = new URLSearchParams({
+											route: route,
+											date: de.date.slice(0, 10),
+											sailings: sailing,
+										})
 										return (
 											<li
 												key={de.date}
@@ -165,7 +170,10 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 														: undefined
 												}
 											>
-												{format(de.date, 'E MMM d, yyyy')} -{' '}
+												<a href={`/?${linkParams}`} target="_blank">
+													{format(de.date, 'E MMM d, yyyy')}
+												</a>{' '}
+												-{' '}
 												{de.full ? (
 													<>Full at {format(de.full, 'h:mm a')}</>
 												) : (
