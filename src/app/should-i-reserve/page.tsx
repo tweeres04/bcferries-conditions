@@ -161,31 +161,27 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 												key={de.date}
 												className={
 													holiday
-														? 'text-blue-950 marker:text-blue-200'
+														? ' text-blue-950 marker:text-blue-200'
 														: undefined
 												}
 											>
-												<div className="flex place-items-center gap-3">
-													{format(de.date, 'E MMM d, yyyy')} -{' '}
-													{de.full ? (
-														<>Full at {format(de.full, 'h:mm a')}</>
-													) : (
-														<>Didn&apos;t fill up</>
-													)}{' '}
-													{holiday ? (
-														<span
-															className="text-sm bg-blue-100 px-2 py-1 rounded-sm"
-															title={`${holiday.name} on ${format(
-																holiday.observedDate,
-																'E MMM d, yyyy'
-															)}`}
-														>
-															{getDay(de.date) === 3
-																? 'Holiday'
-																: 'Long weekend'}
-														</span>
-													) : null}
-												</div>
+												{format(de.date, 'E MMM d, yyyy')} -{' '}
+												{de.full ? (
+													<>Full at {format(de.full, 'h:mm a')}</>
+												) : (
+													<>Didn&apos;t fill up</>
+												)}{' '}
+												{holiday ? (
+													<span
+														className="text-sm bg-blue-100 px-2 py-1 rounded-sm whitespace-nowrap"
+														title={`${holiday.name} on ${format(
+															holiday.observedDate,
+															'E MMM d, yyyy'
+														)}`}
+													>
+														{getDay(de.date) === 3 ? 'Holiday' : 'Long weekend'}
+													</span>
+												) : null}
 											</li>
 										)
 									})}
