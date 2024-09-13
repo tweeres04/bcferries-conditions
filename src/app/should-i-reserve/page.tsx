@@ -84,10 +84,12 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 	const holiday = date ? getHolidayForDate(date) : undefined
 
 	return (
-		<div className="container mx-auto prose prose-lg px-1 py-2 should-i-reserve">
-			<div className="flex">
+		<div className="container mx-auto prose sm:prose-lg px-1 py-2 should-i-reserve">
+			<div className="flex items-center gap-3">
 				<h1 className="grow">Should I reserve the ferry?</h1>
-				<Link href="/">History</Link>
+				<Link href="/" className="text-center">
+					History
+				</Link>
 			</div>
 			<ol>
 				<li>

@@ -74,9 +74,11 @@ export default async function Home({ searchParams }: Props) {
 
 	return (
 		<div className="container mx-auto">
-			<div className="flex items-center">
+			<div className="flex items-center gap-3">
 				<h1 className="text-2xl grow">bc ferries conditions</h1>
-				<Link href="/should-i-reserve">Should I reserve?</Link>
+				<Link href="/should-i-reserve" className="text-center">
+					Should I reserve?
+				</Link>
 			</div>
 			<div className="py-1">
 				<SelectRoute
