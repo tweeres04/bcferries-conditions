@@ -9,6 +9,7 @@ import SelectDate from './SelectDate'
 import SelectRoute from './SelectRoute'
 import { getRoutes } from './getRoutes'
 import { selectValue } from './selectValue'
+import Link from 'next/link'
 
 const title =
 	'BC Ferries Conditions Analytics - Plan your ferry ride stress-free'
@@ -73,7 +74,10 @@ export default async function Home({ searchParams }: Props) {
 
 	return (
 		<div className="container mx-auto">
-			<h1 className="text-2xl">bc ferries conditions</h1>
+			<div className="flex items-center">
+				<h1 className="text-2xl grow">bc ferries conditions</h1>
+				<Link href="/should-i-reserve">Should I reserve?</Link>
+			</div>
 			<div className="py-1">
 				<SelectRoute
 					selectRoute={selectValue('/', 'route')}

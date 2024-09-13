@@ -20,6 +20,7 @@ import { Metadata } from 'next'
 import { selectValue } from '../selectValue'
 import { getEntriesForDow } from './getEntriesForDow'
 import { getHolidayForDate } from '../holidays'
+import Link from 'next/link'
 
 export async function generateMetadata(): Promise<Metadata> {
 	const title = 'Should I reserve the ferry? - BC Ferries Conditions Analytics'
@@ -84,7 +85,10 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 
 	return (
 		<div className="container mx-auto prose prose-lg px-1 py-2 should-i-reserve">
-			<h1>Should I reserve the ferry?</h1>
+			<div className="flex">
+				<h1 className="grow">Should I reserve the ferry?</h1>
+				<Link href="/">History</Link>
+			</div>
 			<ol>
 				<li>
 					<label htmlFor="route">What route?</label>

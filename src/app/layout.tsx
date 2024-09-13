@@ -16,15 +16,17 @@ export default function RootLayout({
 					async
 					src="https://www.googletagmanager.com/gtag/js?id=G-F7KKD021M0"
 				></Script>
-				<script
-					dangerouslySetInnerHTML={{
-						__html: `window.dataLayer = window.dataLayer || [];
+				{process.env.NODE_ENV === 'production' ? (
+					<script
+						dangerouslySetInnerHTML={{
+							__html: `window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
   gtag('config', 'G-F7KKD021M0');`,
-					}}
-				></script>
+						}}
+					></script>
+				) : null}
 				{children}
 			</body>
 		</html>

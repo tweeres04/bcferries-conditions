@@ -17,6 +17,6 @@ const devDb = {
 export default {
 	schema: './src/schema.ts',
 	driver: 'pg',
-	dbCredentials: process.env.NODE_ENV === 'production' ? productionDb : devDb,
+	dbCredentials: productionDb,
 	out: './drizzle',
 } satisfies Config

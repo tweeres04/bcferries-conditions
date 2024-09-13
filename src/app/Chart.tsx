@@ -72,7 +72,7 @@ export default function HistoryChart({ entries }: Props) {
 	const canvasRef = useRef<HTMLCanvasElement>(null)
 	useChart(entries, canvasRef)
 	return (
-		<div style={{ height: 'calc(100dvh - 32px - 50px - 5px)' }}>
+		<div style={{ height: 'calc(50dvh - 32px - 50px - 5px)' }}>
 			<canvas
 				ref={canvasRef}
 				aria-label="Chart showing ferry vehicle capacities over time for the day"
