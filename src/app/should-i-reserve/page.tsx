@@ -25,7 +25,7 @@ import Link from 'next/link'
 export async function generateMetadata(): Promise<Metadata> {
 	const title = 'Should I reserve the ferry? - BC Ferries Conditions Analytics'
 	const description =
-		'Enter your route, date, and sailing time and learn how full the ferry got over the past few weeks. Use past sailing info to decide whether to reserve.'
+		'Use past sailing stats to decide whether to reserve. Enter your route, date, and sailing time and learn how full the ferry got over the past few weeks.'
 	const url = 'https://bcferries-conditions.tweeres.ca/should-i-reserve'
 
 	return {
