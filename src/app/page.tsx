@@ -46,7 +46,7 @@ export default async function Home({ searchParams }: Props) {
 	let { date, route, sailings: sailingsParam } = searchParams
 
 	// Find a better approach than -7 offset
-	date = date ?? formatISO(subHours(new Date(), 7), { representation: 'date' })
+	date = date ?? formatISO(subHours(new Date(), 8), { representation: 'date' })
 	route = route ?? 'SWB-TSA'
 	const sailings = sailingsParam ? [sailingsParam].flat() : undefined
 
@@ -89,7 +89,7 @@ export default async function Home({ searchParams }: Props) {
 				<SelectDate
 					selectDate={selectValue('/', 'date')}
 					dates={dates}
-					defaultValue={formatISO(subHours(new Date(), 7), {
+					defaultValue={formatISO(subHours(new Date(), 8), {
 						representation: 'date',
 					})}
 				/>

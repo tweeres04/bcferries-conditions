@@ -99,7 +99,7 @@ export async function storeEntries() {
 
 	await Promise.all(
 		entries.map((e) => {
-			const todayInBc = subHours(new Date(), 7) // Need to adjust this when DST ends
+			const todayInBc = subHours(new Date(), 8) // Need to adjust this when DST ends
 			const date = formatISO(e.isTomorrow ? addDays(todayInBc, 1) : todayInBc, {
 				representation: 'date',
 			})
