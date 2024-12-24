@@ -21,6 +21,7 @@ import { selectValue } from '../selectValue'
 import { getEntriesForDow } from './getEntriesForDow'
 import { getHolidayForDate } from '../holidays'
 import Link from 'next/link'
+import { TZDate } from '@date-fns/tz'
 
 export async function generateMetadata(): Promise<Metadata> {
 	const title = 'Should I reserve the ferry? - BC Ferries Conditions Analytics'
@@ -103,8 +104,8 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 					<label htmlFor="date">What date?</label>
 					<SelectDate
 						dates={eachDayOfInterval({
-							start: new Date(),
-							end: addMonths(new Date(), 3),
+							start: TZDate.tz('America/Vancouver'),
+							end: addMonths(TZDate.tz('America/Vancouver'), 3),
 						}).map((s) => ({
 							date: formatISO(s, {
 								representation: 'date',
@@ -141,8 +142,12 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 						) : null}
 						<li>
 							<label>
-								Last {format(previousDay(new Date(), dow as Day), 'EEEE')} the{' '}
-								{formatTime(sailing)} ferry:
+								Last{' '}
+								{format(
+									previousDay(TZDate.tz('America/Vancouver'), dow as Day),
+									'EEEE'
+								)}{' '}
+								the {formatTime(sailing)} ferry:
 							</label>
 							{dowEntries ? (
 								<ul>
