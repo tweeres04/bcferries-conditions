@@ -5,8 +5,9 @@ import { RefObject, useLayoutEffect, useRef } from 'react'
 import { groupBy, map, orderBy } from 'lodash'
 import { Chart } from 'chart.js/auto'
 import 'chartjs-adapter-date-fns'
-import { formatISO, isToday, addHours } from 'date-fns'
+import { formatISO, isToday, parseISO } from 'date-fns'
 import { formatTime } from './formatTime'
+import { tz } from '@date-fns/tz'
 
 type Props = {
 	entries: Entry[]
@@ -19,7 +20,9 @@ function useChart(entries: Entry[], canvasRef: RefObject<HTMLCanvasElement>) {
 		const nowString = formatISO(new Date(), {
 			representation: 'time',
 		})
-		const targetIsToday = isToday(addHours(new Date(targetDate), 7))
+		const targetIsToday = isToday(
+			parseISO(targetDate, { in: tz('America/Vancouver') })
+		)
 
 		let datasets = map(groupedEntries, (group, key) => ({
 			label: key,

@@ -1,8 +1,9 @@
 import scrapeIt from 'scrape-it'
-import { addDays, formatISO, subHours } from 'date-fns'
+import { addDays, formatISO } from 'date-fns'
 
 import * as schema from '@/schema'
 import { getDb } from './getDb'
+import { TZDate } from '@date-fns/tz'
 
 type ConditionsResult = {
 	time: string | null
@@ -99,7 +100,7 @@ export async function storeEntries() {
 
 	await Promise.all(
 		entries.map((e) => {
-			const todayInBc = subHours(new Date(), 8) // Need to adjust this when DST ends
+			const todayInBc = TZDate.tz('America/Vancouver')
 			const date = formatISO(e.isTomorrow ? addDays(todayInBc, 1) : todayInBc, {
 				representation: 'date',
 			})

@@ -1,14 +1,7 @@
 'use client'
 
-import {
-	format,
-	isToday,
-	isTomorrow,
-	isYesterday,
-	addHours,
-	formatISO,
-	subHours,
-} from 'date-fns'
+import { tz } from '@date-fns/tz'
+import { format, isToday, isTomorrow, isYesterday, parseISO } from 'date-fns'
 import { useSearchParams } from 'next/navigation'
 
 type Props = {
@@ -32,8 +25,7 @@ export default function SelectDate({ selectDate, dates, defaultValue }: Props) {
 		>
 			<option value="">Select a date</option>
 			{dates.map((d) => {
-				// Add hours since this runs client side, and timestamp is UTC
-				const dateInBcTime = addHours(new Date(d.date), 7)
+				const dateInBcTime = parseISO(d.date, { in: tz('America/Vancouver') })
 				return (
 					<option key={d.date} value={d.date}>
 						{format(dateInBcTime, 'E MMM d, yyyy')}

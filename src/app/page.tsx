@@ -1,7 +1,8 @@
 import { Metadata } from 'next'
 import { and, eq, inArray } from 'drizzle-orm'
 import { entries } from '@/schema'
-import { formatISO, subHours } from 'date-fns'
+import { formatISO } from 'date-fns'
+import { TZDate } from '@date-fns/tz'
 
 import { getDb } from './getDb'
 import Chart from './Chart'
@@ -46,7 +47,9 @@ export default async function Home({ searchParams }: Props) {
 	let { date, route, sailings: sailingsParam } = searchParams
 
 	// Find a better approach than -7 offset
-	date = date ?? formatISO(subHours(new Date(), 8), { representation: 'date' })
+	date =
+		date ??
+		formatISO(TZDate.tz('America/Vancouver'), { representation: 'date' })
 	route = route ?? 'SWB-TSA'
 	const sailings = sailingsParam ? [sailingsParam].flat() : undefined
 
@@ -89,7 +92,7 @@ export default async function Home({ searchParams }: Props) {
 				<SelectDate
 					selectDate={selectValue('/', 'date')}
 					dates={dates}
-					defaultValue={formatISO(subHours(new Date(), 8), {
+					defaultValue={formatISO(TZDate.tz('America/Vancouver'), {
 						representation: 'date',
 					})}
 				/>
