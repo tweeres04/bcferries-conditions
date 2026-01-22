@@ -16,6 +16,7 @@ import { getHolidayForDate } from '../holidays'
 import { TZDate } from '@date-fns/tz'
 import { useRouter } from 'next/navigation'
 import { getRouteBySlug, getSlugByRouteCode, type RouteSlug } from './routeMapping'
+import { routeLabels, type RouteCode } from '../routeLabels'
 
 type Props = {
 	routes: { route: string }[]
@@ -29,11 +30,6 @@ type Props = {
 	route: string
 	routeSlug?: RouteSlug
 	baseUrl: string
-}
-
-const routeLabels = {
-	'SWB-TSA': 'Swartz Bay to Tsawwassen',
-	'TSA-SWB': 'Tsawwassen to Swartz Bay',
 }
 
 export default function ShouldIReserveForm({
@@ -97,9 +93,9 @@ export default function ShouldIReserveForm({
 					id="route"
 				>
 					<option value="">Select a route</option>
-					{(routes as { route: keyof typeof routeLabels }[]).map((d) => (
+					{(routes as { route: RouteCode }[]).map((d) => (
 						<option key={d.route} value={d.route}>
-							{routeLabels[d.route]}
+							{routeLabels[d.route] ?? d.route}
 						</option>
 					))}
 				</select>
