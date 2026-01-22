@@ -53,7 +53,12 @@ export default function ShouldIReserveForm({
 			const newRouteSlug = getSlugByRouteCode(newRoute)
 
 			if (newRouteSlug) {
-				router.push(`/should-i-reserve/${newRouteSlug}`)
+				// Preserve date and sailing query params when changing route
+				const params = new URLSearchParams()
+				if (date) params.set('date', date)
+				if (sailing) params.set('sailing', sailing)
+				const queryString = params.toString()
+				router.push(`/should-i-reserve/${newRouteSlug}${queryString ? `?${queryString}` : ''}`)
 			}
 		} else {
 			// On generic page, update query param
