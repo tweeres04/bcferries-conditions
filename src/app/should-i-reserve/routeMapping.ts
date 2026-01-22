@@ -1,5 +1,5 @@
 // Maps user-friendly route slugs to route codes and metadata
-export const routeConfig = {
+const routeConfig = {
 	'vancouver-victoria': {
 		code: 'TSA-SWB',
 		from: 'Vancouver (Tsawwassen)',

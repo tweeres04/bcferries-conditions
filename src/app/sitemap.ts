@@ -6,23 +6,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
 	
 	const routePages = getAllRouteSlugs().map((slug) => ({
 		url: `${baseUrl}/should-i-reserve/${slug}`,
-		lastModified: new Date(),
-		changeFrequency: 'daily' as const,
-		priority: 0.9,
+		changeFrequency: 'hourly' as const,
 	}))
 
 	return [
 		{
 			url: baseUrl,
-			lastModified: new Date(),
-			changeFrequency: 'daily',
-			priority: 1,
+			changeFrequency: 'hourly' as const,
 		},
 		{
 			url: `${baseUrl}/should-i-reserve`,
-			lastModified: new Date(),
-			changeFrequency: 'weekly',
-			priority: 0.8,
+			changeFrequency: 'hourly' as const,
 		},
 		...routePages,
 	]
