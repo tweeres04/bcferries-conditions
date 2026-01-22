@@ -29,3 +29,10 @@ export function isValidRouteSlug(slug: string): slug is RouteSlug {
 export function getAllRouteSlugs(): RouteSlug[] {
 	return Object.keys(routeConfig) as RouteSlug[]
 }
+
+export function getSlugByRouteCode(code: string): RouteSlug | undefined {
+	const entry = Object.entries(routeConfig).find(
+		([, info]) => info.code === code
+	)
+	return entry?.[0] as RouteSlug | undefined
+}

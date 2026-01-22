@@ -1,27 +1,14 @@
 import { getRoutes } from '../getRoutes'
-import SelectRoute from '../SelectRoute'
-import SelectDate from '../SelectDate'
 import {
-	formatISO,
-	eachDayOfInterval,
-	addMonths,
-	format,
-	previousDay,
-	Day,
 	parseISO,
-	getDay,
 } from 'date-fns'
 import { getDb } from '../getDb'
 import { entries } from '@/schema'
 import { gte, sql } from 'drizzle-orm'
-import SelectSailing from './SelectSailing'
-import { formatTime } from '../formatTime'
 import { Metadata } from 'next'
-import { selectValue } from '../selectValue'
 import { getEntriesForDow } from './getEntriesForDow'
-import { getHolidayForDate } from '../holidays'
 import Link from 'next/link'
-import { TZDate } from '@date-fns/tz'
+import ShouldIReserveForm from './ShouldIReserveForm'
 
 export async function generateMetadata(): Promise<Metadata> {
 	const title = 'Should I reserve the ferry? - BC Ferries Conditions Analytics'
@@ -82,8 +69,6 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 		dowEntriesPromise,
 	])
 
-	const holiday = date ? getHolidayForDate(date) : undefined
-
 	return (
 		<div className="container mx-auto prose sm:prose-lg px-1 py-2 should-i-reserve">
 			<div className="flex items-center gap-3">
@@ -92,156 +77,15 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 					History
 				</Link>
 			</div>
-			<div className="not-prose mb-4">
-				<p className="text-sm text-gray-600 mb-2">Popular routes:</p>
-				<div className="flex gap-2 flex-wrap">
-					<Link 
-						href="/should-i-reserve/vancouver-victoria" 
-						className="px-3 py-1 bg-blue-100 hover:bg-blue-200 rounded text-sm"
-					>
-						Vancouver → Victoria
-					</Link>
-					<Link 
-						href="/should-i-reserve/victoria-vancouver" 
-						className="px-3 py-1 bg-blue-100 hover:bg-blue-200 rounded text-sm"
-					>
-						Victoria → Vancouver
-					</Link>
-				</div>
-			</div>
-			<ol>
-				<li>
-					<label htmlFor="route">What route?</label>
-					<SelectRoute
-						routes={routes}
-						selectRoute={selectValue('/should-i-reserve', 'route')}
-					/>
-				</li>
-				<li>
-					<label htmlFor="date">What date?</label>
-					<SelectDate
-						dates={eachDayOfInterval({
-							start: TZDate.tz('America/Vancouver'),
-							end: addMonths(TZDate.tz('America/Vancouver'), 3),
-						}).map((s) => ({
-							date: formatISO(s, {
-								representation: 'date',
-							}),
-						}))}
-						selectDate={selectValue('/should-i-reserve', 'date')}
-					/>
-				</li>
-
-				<li>
-					<label htmlFor="sailing">What sailing?</label>
-					<SelectSailing
-						sailings={sailings}
-						selectSailing={selectValue('/should-i-reserve', 'sailing')}
-					/>
-				</li>
-				{route && date && sailing && dow !== undefined ? (
-					<>
-						{holiday ? (
-							<li>
-								<label>
-									{format(date, 'E MMM d, yyyy')} is on a long weekend
-								</label>
-								<ul>
-									<li>
-										{holiday.name} on{' '}
-										{format(holiday.observedDate, 'E MMM d, yyyy')}
-									</li>
-									<li>
-										The ferries are typically much busier on long weekends
-									</li>
-								</ul>
-							</li>
-						) : null}
-						<li>
-							<label>
-								Last{' '}
-								{format(
-									previousDay(TZDate.tz('America/Vancouver'), dow as Day),
-									'EEEE'
-								)}{' '}
-								the {formatTime(sailing)} ferry:
-							</label>
-							{dowEntries ? (
-								<ul>
-									<li>
-										{dowEntries[0].full ? (
-											<>Filled at {format(dowEntries[0].full, 'h:mm a')}</>
-										) : (
-											<>Didn&apos;t fill up</>
-										)}
-									</li>
-								</ul>
-							) : null}
-						</li>
-						<li>
-							<label>Here&apos;s what happened in the last six weeks:</label>
-							{dowEntries ? (
-								<ul>
-									{dowEntries.map((de) => {
-										const holiday = getHolidayForDate(de.date)
-										const linkParams = new URLSearchParams({
-											route: route,
-											date: de.date.slice(0, 10),
-											sailings: sailing,
-										})
-										return (
-											<li
-												key={de.date}
-												className={
-													holiday
-														? ' text-blue-950 marker:text-blue-200'
-														: undefined
-												}
-											>
-												<a href={`/?${linkParams}`} target="_blank">
-													{format(de.date, 'E MMM d, yyyy')}
-												</a>{' '}
-												-{' '}
-												{de.full ? (
-													<>Full at {format(de.full, 'h:mm a')}</>
-												) : (
-													<>Didn&apos;t fill up</>
-												)}{' '}
-												{holiday ? (
-													<span
-														className="text-sm bg-blue-100 px-2 py-1 rounded-sm whitespace-nowrap"
-														title={`${holiday.name} on ${format(
-															holiday.observedDate,
-															'E MMM d, yyyy'
-														)}`}
-													>
-														{getDay(de.date) === 3 ? 'Holiday' : 'Long weekend'}
-													</span>
-												) : null}
-											</li>
-										)
-									})}
-								</ul>
-							) : null}
-						</li>
-						<li>
-							<label>When you&apos;re ready, make your reservation:</label>
-							<ul>
-								<li>
-									BC Ferries&apos;{' '}
-									<a href="https://www.bcferries.com/RouteSelectionPage">
-										reservation page
-									</a>
-								</li>
-							</ul>
-						</li>
-						<p className="text-sm">To do:</p>
-						<ul className="text-sm">
-							<li>give recommendation to reserve or not</li>
-						</ul>
-					</>
-				) : null}
-			</ol>
+			<ShouldIReserveForm
+				routes={routes}
+				sailings={sailings}
+				dowEntries={dowEntries}
+				date={date}
+				sailing={sailing}
+				route={route || ''}
+				baseUrl="/should-i-reserve"
+			/>
 			<footer className="text-center py-32">
 				<p>
 					By{' '}
