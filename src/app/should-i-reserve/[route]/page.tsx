@@ -1,6 +1,6 @@
-import { getRoutes } from '../getRoutes'
-import SelectRoute from '../SelectRoute'
-import SelectDate from '../SelectDate'
+import { getRoutes } from '../../getRoutes'
+import SelectRoute from '../../SelectRoute'
+import SelectDate from '../../SelectDate'
 import {
 	formatISO,
 	eachDayOfInterval,
@@ -11,23 +11,42 @@ import {
 	parseISO,
 	getDay,
 } from 'date-fns'
-import { getDb } from '../getDb'
+import { getDb } from '../../getDb'
 import { entries } from '@/schema'
 import { gte, sql } from 'drizzle-orm'
-import SelectSailing from './SelectSailing'
-import { formatTime } from '../formatTime'
+import SelectSailing from '../SelectSailing'
+import { formatTime } from '../../formatTime'
 import { Metadata } from 'next'
-import { selectValue } from '../selectValue'
-import { getEntriesForDow } from './getEntriesForDow'
-import { getHolidayForDate } from '../holidays'
+import { selectValue } from '../../selectValue'
+import { getEntriesForDow } from '../getEntriesForDow'
+import { getHolidayForDate } from '../../holidays'
 import Link from 'next/link'
 import { TZDate } from '@date-fns/tz'
+import { getRouteBySlug, isValidRouteSlug, getAllRouteSlugs } from '../routeMapping'
+import { notFound } from 'next/navigation'
 
-export async function generateMetadata(): Promise<Metadata> {
-	const title = 'Should I reserve the ferry? - BC Ferries Conditions Analytics'
-	const description =
-		'Use past sailing stats to decide whether to reserve. Enter your route, date, and sailing time and learn how full the ferry got over the past few weeks.'
-	const url = 'https://bcferries-conditions.tweeres.ca/should-i-reserve'
+type Props = {
+	params: {
+		route: string
+	}
+	searchParams: {
+		date?: string
+		sailing?: string
+	}
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+	const routeInfo = getRouteBySlug(params.route)
+	
+	if (!routeInfo) {
+		return {
+			title: 'Route Not Found',
+		}
+	}
+
+	const title = `Should I reserve the ${routeInfo.fromShort} to ${routeInfo.toShort} ferry? - BC Ferries Conditions`
+	const description = `Use past sailing stats to decide whether to reserve the ${routeInfo.from} to ${routeInfo.to} ferry. See how full this route got over the past few weeks.`
+	const url = `https://bcferries-conditions.tweeres.ca/should-i-reserve/${params.route}`
 
 	return {
 		title,
@@ -45,6 +64,12 @@ export async function generateMetadata(): Promise<Metadata> {
 	}
 }
 
+export async function generateStaticParams() {
+	return getAllRouteSlugs().map((route) => ({
+		route,
+	}))
+}
+
 function getSailings() {
 	const db = getDb()
 
@@ -55,24 +80,24 @@ function getSailings() {
 		.orderBy(entries.time)
 }
 
-type Props = {
-	searchParams: {
-		date?: string
-		route?: string
-		sailing?: string
+export default async function ShouldIReserveRoute({ params, searchParams }: Props) {
+	// Validate route
+	if (!isValidRouteSlug(params.route)) {
+		notFound()
 	}
-}
 
-export default async function ShouldIReserve({ searchParams }: Props) {
+	const routeInfo = getRouteBySlug(params.route)
 	const routesPromise = getRoutes()
 	const sailingsPromise = getSailings()
 
-	const { date, route, sailing } = searchParams
-	const parsedDate = date ? parseISO(date) : undefined // new Date() assumes it's gmt time
+	// Pre-fill route from URL, but allow override from search params
+	const route = routeInfo.code
+	const { date, sailing } = searchParams
+	const parsedDate = date ? parseISO(date) : undefined
 	const dow = parsedDate ? parsedDate.getDay() : undefined
 
 	const dowEntriesPromise =
-		dow !== undefined && route !== undefined && sailing !== undefined
+		dow !== undefined && sailing !== undefined
 			? getEntriesForDow({ dow, route, sailing })
 			: Promise.resolve()
 
@@ -87,34 +112,18 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 	return (
 		<div className="container mx-auto prose sm:prose-lg px-1 py-2 should-i-reserve">
 			<div className="flex items-center gap-3">
-				<h1 className="grow">Should I reserve the ferry?</h1>
+				<h1 className="grow">Should I reserve the {routeInfo.fromShort} to {routeInfo.toShort} ferry?</h1>
 				<Link href="/" className="text-center">
 					History
 				</Link>
 			</div>
-			<div className="not-prose mb-4">
-				<p className="text-sm text-gray-600 mb-2">Popular routes:</p>
-				<div className="flex gap-2 flex-wrap">
-					<Link 
-						href="/should-i-reserve/vancouver-victoria" 
-						className="px-3 py-1 bg-blue-100 hover:bg-blue-200 rounded text-sm"
-					>
-						Vancouver → Victoria
-					</Link>
-					<Link 
-						href="/should-i-reserve/victoria-vancouver" 
-						className="px-3 py-1 bg-blue-100 hover:bg-blue-200 rounded text-sm"
-					>
-						Victoria → Vancouver
-					</Link>
-				</div>
-			</div>
 			<ol>
 				<li>
-					<label htmlFor="route">What route?</label>
+					<label htmlFor="route">Route: {routeInfo.from} to {routeInfo.to}</label>
 					<SelectRoute
 						routes={routes}
-						selectRoute={selectValue('/should-i-reserve', 'route')}
+						selectRoute={selectValue(`/should-i-reserve/${params.route}`, 'route')}
+						defaultValue={route}
 					/>
 				</li>
 				<li>
@@ -128,7 +137,7 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 								representation: 'date',
 							}),
 						}))}
-						selectDate={selectValue('/should-i-reserve', 'date')}
+						selectDate={selectValue(`/should-i-reserve/${params.route}`, 'date')}
 					/>
 				</li>
 
@@ -136,10 +145,10 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 					<label htmlFor="sailing">What sailing?</label>
 					<SelectSailing
 						sailings={sailings}
-						selectSailing={selectValue('/should-i-reserve', 'sailing')}
+						selectSailing={selectValue(`/should-i-reserve/${params.route}`, 'sailing')}
 					/>
 				</li>
-				{route && date && sailing && dow !== undefined ? (
+				{date && sailing && dow !== undefined ? (
 					<>
 						{holiday ? (
 							<li>
