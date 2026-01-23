@@ -1,5 +1,5 @@
 import { differenceInCalendarDays, getDay, formatISO } from 'date-fns'
-import { TZDate } from '@date-fns/tz'
+import { TZDate, tz } from '@date-fns/tz'
 
 export const holidays = [
 	{
@@ -103,7 +103,7 @@ export function getNextOccurrence(name: string) {
 }
 
 export function getHolidayForDate(date: string) {
-	const dow = getDay(date) as keyof typeof ranges
+	const dow = getDay(date, { in: tz('America/Vancouver') }) as keyof typeof ranges
 	const holiday = holidays.find((h) => {
 		const diff = differenceInCalendarDays(h.observedDate, date)
 		return diff >= ranges[dow][0] && diff <= ranges[dow][1]
