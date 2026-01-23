@@ -9,25 +9,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
 		url: `${baseUrl}/should-i-reserve?route=${code}`,
 	}))
 
-	const holidayPages = getUniqueHolidays().map((holiday) => {
-		const nextDate = getNextOccurrence(holiday.name)
-		const query = new URLSearchParams({ holiday: holiday.slug })
-		if (nextDate) query.set('date', nextDate)
-		return {
-			url: `${baseUrl}/should-i-reserve?${query.toString()}`,
-		}
-	})
-
-	const holidayRoutePages = getUniqueHolidays().flatMap((holiday) => {
-		const nextDate = getNextOccurrence(holiday.name)
-		return getAllRouteCodes().map((route: string) => {
-			const query = new URLSearchParams({ holiday: holiday.slug, route })
-			if (nextDate) query.set('date', nextDate)
+	const holidayPages = getUniqueHolidays()
+		.filter((holiday) => getNextOccurrence(holiday.name))
+		.map((holiday) => {
+			const query = new URLSearchParams({ holiday: holiday.slug })
 			return {
 				url: `${baseUrl}/should-i-reserve?${query.toString()}`,
 			}
 		})
-	})
+
+	const holidayRoutePages = getUniqueHolidays()
+		.filter((holiday) => getNextOccurrence(holiday.name))
+		.flatMap((holiday) => {
+			return getAllRouteCodes().map((route: string) => {
+				const query = new URLSearchParams({ holiday: holiday.slug, route })
+				return {
+					url: `${baseUrl}/should-i-reserve?${query.toString()}`,
+				}
+			})
+		})
 
 	// Add stable recurring day-of-week pages (Friday, Sunday, Monday are peak)
 	const days = ['friday', 'sunday', 'monday']

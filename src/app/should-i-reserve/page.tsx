@@ -85,9 +85,17 @@ export async function generateMetadata({
 
 	const params = new URLSearchParams()
 	if (route) params.set('route', route)
-	if (effectiveHolidayInfo) params.set('holiday', holidaySlug!)
-	if (date) params.set('date', date)
-	if (day && !effectiveHolidayInfo) params.set('day', day)
+	if (effectiveHolidayInfo) {
+		params.set('holiday', holidaySlug!)
+		// If the date matches the next occurrence of this holiday, we don't need the date param in the canonical URL
+		const nextDate = getNextOccurrence(effectiveHolidayInfo.name)
+		if (date !== nextDate) {
+			if (date) params.set('date', date)
+		}
+	} else {
+		if (date) params.set('date', date)
+		if (day) params.set('day', day)
+	}
 	const queryString = params.toString()
 
 	const url = `https://bcferries-conditions.tweeres.ca/should-i-reserve${
@@ -140,6 +148,20 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 
 	const holidayInfo = holidaySlug ? getHolidayBySlug(holidaySlug) : undefined
 
+	// If date is provided, check if it's the next occurrence of a holiday and redirect to stable URL if so
+	if (date && !holidaySlug) {
+		const holidayForDate = getHolidayForDate(date)
+		if (holidayForDate) {
+			const nextDate = getNextOccurrence(holidayForDate.name)
+			if (nextDate === date) {
+				const params = new URLSearchParams(searchParams)
+				params.set('holiday', getHolidaySlug(holidayForDate.name))
+				params.delete('date')
+				redirect(`/should-i-reserve?${params.toString()}`)
+			}
+		}
+	}
+
 	// If date is provided but doesn't match the holiday, redirect to remove the holiday param
 	if (holidaySlug && date) {
 		const holidayForDate = getHolidayForDate(date)
@@ -148,15 +170,23 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 			params.delete('holiday')
 			redirect(`/should-i-reserve?${params.toString()}`)
 		}
+
+		// If it is the holiday and matches the next occurrence, remove the date param for stable URL
+		if (holidayInfo) {
+			const nextDate = getNextOccurrence(holidayInfo.name)
+			if (nextDate === date) {
+				const params = new URLSearchParams(searchParams)
+				params.delete('date')
+				redirect(`/should-i-reserve?${params.toString()}`)
+			}
+		}
 	}
 
-	// If a holiday is selected but no date is provided, redirect to the next occurrence
+	// If a holiday is selected but no date is provided, derive the next occurrence
 	if (holidayInfo && !date) {
 		const nextDate = getNextOccurrence(holidayInfo.name)
 		if (nextDate) {
-			const params = new URLSearchParams(searchParams)
-			params.set('date', nextDate)
-			redirect(`/should-i-reserve?${params.toString()}`)
+			date = nextDate
 		}
 	}
 
