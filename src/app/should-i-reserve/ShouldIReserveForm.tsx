@@ -13,8 +13,6 @@ import {
 } from 'date-fns'
 import { getHolidayForDate } from '../holidays'
 import { TZDate } from '@date-fns/tz'
-import { redirect } from 'next/navigation'
-import { getRouteBySlug, getSlugByRouteCode, type RouteSlug } from './routeMapping'
 import { selectValue } from '../selectValue'
 import Link from 'next/link'
 import { ReactNode } from 'react'
@@ -30,7 +28,6 @@ type Props = {
 	date?: string
 	sailing?: string
 	route: string
-	routeSlug?: RouteSlug
 	baseUrl: string
 }
 
@@ -42,7 +39,6 @@ export default function ShouldIReserveForm({
 	date,
 	sailing,
 	route,
-	routeSlug,
 	baseUrl,
 }: Props) {
 	const parsedDate = date ? new Date(date) : undefined
@@ -52,23 +48,7 @@ export default function ShouldIReserveForm({
 	return (
 		<div className="container mx-auto prose sm:prose-lg px-2 py-4 should-i-reserve">
 			<div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-				<h1 className="text-2xl sm:text-4xl grow mb-0">
-					{routeSlug ? (
-						<>
-							Should I reserve the{' '}
-							<span className="sm:hidden">
-								{getRouteBySlug(routeSlug)?.fromShort} to{' '}
-								{getRouteBySlug(routeSlug)?.toShort}
-							</span>
-							<span className="hidden sm:inline">
-								{getRouteBySlug(routeSlug)?.from} to {getRouteBySlug(routeSlug)?.to}
-							</span>{' '}
-							ferry?
-						</>
-					) : (
-						title
-					)}
-				</h1>
+				<h1 className="text-2xl sm:text-4xl grow mb-0">{title}</h1>
 				<Link href="/" className="text-sm sm:text-base">
 					History
 				</Link>
@@ -77,23 +57,7 @@ export default function ShouldIReserveForm({
 				<li>
 					<label htmlFor="route">What route?</label>
 					<SelectRoute
-						selectRoute={
-							routeSlug
-								? async (searchParams, newRoute) => {
-										'use server'
-										const newRouteSlug = getSlugByRouteCode(newRoute)
-										const params = new URLSearchParams(searchParams)
-										if (newRouteSlug) {
-											redirect(
-												`/should-i-reserve/${newRouteSlug}?${params.toString()}`
-											)
-										} else {
-											params.set('route', newRoute)
-											redirect(`/should-i-reserve?${params.toString()}`)
-										}
-								  }
-								: selectValue(baseUrl, 'route')
-						}
+						selectRoute={selectValue(baseUrl, 'route')}
 						routes={routes}
 						defaultValue={route}
 					/>

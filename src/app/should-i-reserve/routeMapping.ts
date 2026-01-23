@@ -1,4 +1,3 @@
-// Maps user-friendly route slugs to route codes and metadata
 const routeConfig = {
 	'vancouver-victoria': {
 		code: 'TSA-SWB',
@@ -16,23 +15,17 @@ const routeConfig = {
 	},
 } as const
 
-export type RouteSlug = keyof typeof routeConfig
-
-export function getRouteBySlug(slug: string) {
-	return routeConfig[slug as RouteSlug]
+export function getAllRouteCodes(): string[] {
+	return Object.values(routeConfig).map((info) => info.code)
 }
 
-export function isValidRouteSlug(slug: string): slug is RouteSlug {
-	return slug in routeConfig
-}
-
-export function getAllRouteSlugs(): RouteSlug[] {
-	return Object.keys(routeConfig) as RouteSlug[]
-}
-
-export function getSlugByRouteCode(code: string): RouteSlug | undefined {
+export function getSlugByRouteCode(code: string) {
 	const entry = Object.entries(routeConfig).find(
 		([, info]) => info.code === code
 	)
-	return entry?.[0] as RouteSlug | undefined
+	return entry?.[0]
+}
+
+export function getRouteByCode(code: string) {
+	return Object.values(routeConfig).find((info) => info.code === code)
 }

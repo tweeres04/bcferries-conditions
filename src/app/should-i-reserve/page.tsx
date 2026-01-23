@@ -9,12 +9,23 @@ import { Metadata } from 'next'
 import { getEntriesForDow } from './getEntriesForDow'
 import Link from 'next/link'
 import ShouldIReserveForm from './ShouldIReserveForm'
+import { getRouteByCode } from './routeMapping'
 
-export async function generateMetadata(): Promise<Metadata> {
-	const title = 'Should I reserve the ferry? - BC Ferries Conditions Analytics'
-	const description =
-		'Use past sailing stats to decide whether to reserve. Enter your route, date, and sailing time and learn how full the ferry got over the past few weeks.'
-	const url = 'https://bcferries-conditions.tweeres.ca/should-i-reserve'
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+	const { route } = searchParams
+	const routeInfo = route ? getRouteByCode(route) : undefined
+
+	const title = routeInfo
+		? `Should I reserve the ${routeInfo.from} to ${routeInfo.to} ferry? - BC Ferries Conditions`
+		: 'Should I reserve the ferry? - BC Ferries Conditions Analytics'
+
+	const description = routeInfo
+		? `Use past sailing stats to decide whether to reserve the ${routeInfo.from} to ${routeInfo.to} ferry. See how full this route got over the past few weeks.`
+		: 'Use past sailing stats to decide whether to reserve. Enter your route, date, and sailing time and learn how full the ferry got over the past few weeks.'
+
+	const url = routeInfo
+		? `https://bcferries-conditions.tweeres.ca/should-i-reserve?route=${route}`
+		: 'https://bcferries-conditions.tweeres.ca/should-i-reserve'
 
 	return {
 		title,
@@ -69,9 +80,26 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 		dowEntriesPromise,
 	])
 
+	const routeInfo = route ? getRouteByCode(route) : undefined
+
 	return (
 		<ShouldIReserveForm
-			title="Should I reserve the ferry?"
+			title={
+				routeInfo ? (
+					<>
+						Should I reserve the{' '}
+						<span className="sm:hidden">
+							{routeInfo.fromShort} to {routeInfo.toShort}
+						</span>
+						<span className="hidden sm:inline">
+							{routeInfo.from} to {routeInfo.to}
+						</span>{' '}
+						ferry?
+					</>
+				) : (
+					'Should I reserve the ferry?'
+				)
+			}
 			routes={routes}
 			sailings={sailings}
 			dowEntries={dowEntries}
