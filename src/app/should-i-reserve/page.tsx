@@ -7,7 +7,12 @@ import { Metadata } from 'next'
 import { getEntriesForDow } from './getEntriesForDow'
 import ShouldIReserveForm from './ShouldIReserveForm'
 import { getRouteByCode } from './routeMapping'
-import { getHolidayBySlug, getNextOccurrence } from '../holidays'
+import {
+	getHolidayBySlug,
+	getNextOccurrence,
+	getHolidayForDate,
+	getHolidaySlug,
+} from '../holidays'
 import { redirect } from 'next/navigation'
 
 type Props = {
@@ -22,20 +27,28 @@ type Props = {
 export async function generateMetadata({
 	searchParams,
 }: Props): Promise<Metadata> {
-	const { route, holiday: holidaySlug } = searchParams
+	const { route, holiday: holidaySlug, date } = searchParams
 	const routeInfo = route ? getRouteByCode(route) : undefined
 	const holidayInfo = holidaySlug ? getHolidayBySlug(holidaySlug) : undefined
+
+	// If date doesn't match holiday, don't show holiday metadata
+	const effectiveHolidayInfo =
+		holidayInfo &&
+		date &&
+		getHolidaySlug(getHolidayForDate(date)?.name ?? '') !== holidaySlug
+			? undefined
+			: holidayInfo
 
 	let title = 'Should I reserve the ferry? - BC Ferries Conditions Analytics'
 	let description =
 		'Use past sailing stats to decide whether to reserve. Enter your route, date, and sailing time and learn how full the ferry got over the past few weeks.'
 
-	if (holidayInfo && routeInfo) {
-		title = `BC Ferries ${holidayInfo.name} Capacity & Trends: ${routeInfo.from} to ${routeInfo.to}`
-		description = `See how busy the ${routeInfo.from} to ${routeInfo.to} ferry gets on ${holidayInfo.name}. View historical data and decide whether to reserve.`
-	} else if (holidayInfo) {
-		title = `BC Ferries ${holidayInfo.name} Capacity & Travel Trends`
-		description = `Planning to travel on ${holidayInfo.name}? See historical BC Ferries capacity and learn if you should reserve your sailing.`
+	if (effectiveHolidayInfo && routeInfo) {
+		title = `Should I reserve the ${routeInfo.fromShort} to ${routeInfo.toShort} ferry on ${effectiveHolidayInfo.name}? - BC Ferries Conditions`
+		description = `Check historical capacity and travel trends for the ${routeInfo.from} to ${routeInfo.to} ferry on ${effectiveHolidayInfo.name}. Use past data to decide if you need a reservation.`
+	} else if (effectiveHolidayInfo) {
+		title = `Should I reserve the ferry on ${effectiveHolidayInfo.name}? - BC Ferries Conditions`
+		description = `Planning to travel on ${effectiveHolidayInfo.name}? See historical BC Ferries capacity and learn if you should reserve your sailing.`
 	} else if (routeInfo) {
 		title = `Should I reserve the ${routeInfo.from} to ${routeInfo.to} ferry? - BC Ferries Conditions`
 		description = `Use past sailing stats to decide whether to reserve the ${routeInfo.from} to ${routeInfo.to} ferry. See how full this route got over the past few weeks.`
@@ -43,7 +56,8 @@ export async function generateMetadata({
 
 	const params = new URLSearchParams()
 	if (route) params.set('route', route)
-	if (holidaySlug) params.set('holiday', holidaySlug)
+	if (effectiveHolidayInfo) params.set('holiday', holidaySlug!)
+	if (date) params.set('date', date)
 	const queryString = params.toString()
 
 	const url = `https://bcferries-conditions.tweeres.ca/should-i-reserve${
@@ -80,6 +94,16 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 	const { holiday: holidaySlug, route, sailing, date } = searchParams
 
 	const holidayInfo = holidaySlug ? getHolidayBySlug(holidaySlug) : undefined
+
+	// If date is provided but doesn't match the holiday, redirect to remove the holiday param
+	if (holidaySlug && date) {
+		const holidayForDate = getHolidayForDate(date)
+		if (getHolidaySlug(holidayForDate?.name ?? '') !== holidaySlug) {
+			const params = new URLSearchParams(searchParams)
+			params.delete('holiday')
+			redirect(`/should-i-reserve?${params.toString()}`)
+		}
+	}
 
 	// If a holiday is selected but no date is provided, redirect to the next occurrence
 	if (holidayInfo && !date) {
