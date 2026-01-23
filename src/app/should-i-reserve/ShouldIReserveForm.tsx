@@ -10,9 +10,10 @@ import {
 	previousDay,
 	Day,
 	getDay,
+	parseISO,
 } from 'date-fns'
 import { getHolidayForDate } from '../holidays'
-import { TZDate } from '@date-fns/tz'
+import { TZDate, tz } from '@date-fns/tz'
 import { selectValue } from '../selectValue'
 import Link from 'next/link'
 import { ReactNode } from 'react'
@@ -41,8 +42,8 @@ export default function ShouldIReserveForm({
 	route,
 	baseUrl,
 }: Props) {
-	const parsedDate = date ? new Date(date) : undefined
-	const dow = parsedDate ? parsedDate.getDay() : undefined
+	const parsedDate = date ? parseISO(date, { in: tz('America/Vancouver') }) : undefined
+	const dow = parsedDate ? getDay(parsedDate, { in: tz('America/Vancouver') }) : undefined
 	const holiday = date ? getHolidayForDate(date) : undefined
 
 	return (
@@ -59,6 +60,7 @@ export default function ShouldIReserveForm({
 					<SelectRoute
 						selectRoute={selectValue(baseUrl, 'route')}
 						routes={routes}
+						defaultValue={route}
 					/>
 				</li>
 				<li>
@@ -73,6 +75,7 @@ export default function ShouldIReserveForm({
 							}),
 						}))}
 						selectDate={selectValue(baseUrl, 'date')}
+						defaultValue={date}
 					/>
 				</li>
 
@@ -81,6 +84,7 @@ export default function ShouldIReserveForm({
 					<SelectSailing
 						sailings={sailings}
 						selectSailing={selectValue(baseUrl, 'sailing')}
+						defaultValue={sailing}
 					/>
 				</li>
 				{date && sailing && dow !== undefined ? (
@@ -159,7 +163,7 @@ export default function ShouldIReserveForm({
 															'E MMM d, yyyy'
 														)}`}
 													>
-														{getDay(de.date) === 3 ? 'Holiday' : 'Long weekend'}
+														{getDay(de.date, { in: tz('America/Vancouver') }) === 3 ? 'Holiday' : 'Long weekend'}
 													</span>
 												) : null}
 											</li>
