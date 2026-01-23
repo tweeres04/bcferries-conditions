@@ -75,16 +75,7 @@ export default function ShouldIReserveForm({
 			</div>
 			<ol className="pl-6 sm:pl-8">
 				<li>
-					<label htmlFor="route" className="sm:hidden">
-						Route
-					</label>
-					<label htmlFor="route" className="hidden sm:inline">
-						{routeSlug
-							? `Route: ${getRouteBySlug(routeSlug)?.from} to ${
-									getRouteBySlug(routeSlug)?.to
-							  }`
-							: 'What route?'}
-					</label>
+					<label htmlFor="route">What route?</label>
 					<SelectRoute
 						selectRoute={
 							routeSlug
@@ -217,20 +208,17 @@ export default function ShouldIReserveForm({
 						<li>
 							<label>When you&apos;re ready, make your reservation:</label>
 							<ul>
-								<li>
-									BC Ferries&apos;{' '}
-									<a href="https://www.bcferries.com/RouteSelectionPage">
-										reservation page
-									</a>
-								</li>
-							</ul>
-						</li>
-						<p className="text-sm">To do:</p>
-						<ul className="text-sm">
-							<li>give recommendation to reserve or not</li>
+							<li>
+								BC Ferries&apos;{' '}
+								<a href="https://www.bcferries.com/RouteSelectionPage">
+									reservation page
+								</a>
+							</li>
 						</ul>
-					</>
-				) : null}
+					</li>
+				</>
+			) : null}
+
 			</ol>
 			<footer className="text-center py-32">
 				<p>
