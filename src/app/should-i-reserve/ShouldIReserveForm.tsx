@@ -66,7 +66,7 @@ export default function ShouldIReserveForm({
 					<SelectDate
 						dates={eachDayOfInterval({
 							start: TZDate.tz('America/Vancouver'),
-							end: addMonths(TZDate.tz('America/Vancouver'), 3),
+							end: addMonths(TZDate.tz('America/Vancouver'), 6),
 						}).map((s) => ({
 							date: formatISO(s, {
 								representation: 'date',
