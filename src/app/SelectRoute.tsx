@@ -25,6 +25,7 @@ export default function SelectRoute({
 			value={route}
 			defaultValue={defaultValue}
 			id="route"
+			className="w-full"
 		>
 			<option value="">Select a route</option>
 			{(routes as { route: RouteCode }[]).map((d) => (

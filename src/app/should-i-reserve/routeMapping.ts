@@ -4,15 +4,15 @@ const routeConfig = {
 		code: 'TSA-SWB',
 		from: 'Vancouver (Tsawwassen)',
 		to: 'Victoria (Swartz Bay)',
-		fromShort: 'Vancouver',
-		toShort: 'Victoria',
+		fromShort: 'Tsawwassen',
+		toShort: 'Swartz Bay',
 	},
 	'victoria-vancouver': {
 		code: 'SWB-TSA',
 		from: 'Victoria (Swartz Bay)',
 		to: 'Vancouver (Tsawwassen)',
-		fromShort: 'Victoria',
-		toShort: 'Vancouver',
+		fromShort: 'Swartz Bay',
+		toShort: 'Tsawwassen',
 	},
 } as const
 

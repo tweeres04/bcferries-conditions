@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 		}
 	}
 
-	const title = `Should I reserve the ${routeInfo.fromShort} to ${routeInfo.toShort} ferry? - BC Ferries Conditions`
+	const title = `Should I reserve the ${routeInfo.from} to ${routeInfo.to} ferry? - BC Ferries Conditions`
 	const description = `Use past sailing stats to decide whether to reserve the ${routeInfo.from} to ${routeInfo.to} ferry. See how full this route got over the past few weeks.`
 	const url = `https://bcferries-conditions.tweeres.ca/should-i-reserve/${params.route}`
 
@@ -96,7 +96,7 @@ export default async function ShouldIReserveRoute({ params, searchParams }: Prop
 
 	return (
 		<ShouldIReserveForm
-			title={`Should I reserve the ${routeInfo.fromShort} to ${routeInfo.toShort} ferry?`}
+			title={`Should I reserve the ${routeInfo.from} to ${routeInfo.to} ferry?`}
 			routes={routes}
 			sailings={sailings}
 			dowEntries={dowEntries}

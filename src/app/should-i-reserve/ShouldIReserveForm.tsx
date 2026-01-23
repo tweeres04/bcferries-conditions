@@ -50,16 +50,35 @@ export default function ShouldIReserveForm({
 	const holiday = date ? getHolidayForDate(date) : undefined
 
 	return (
-		<div className="container mx-auto prose sm:prose-lg px-1 py-2 should-i-reserve">
-			<div className="flex items-center gap-3">
-				<h1 className="grow">{title}</h1>
-				<Link href="/" className="text-center">
+		<div className="container mx-auto prose sm:prose-lg px-2 py-4 should-i-reserve">
+			<div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+				<h1 className="text-2xl sm:text-4xl grow mb-0">
+					{routeSlug ? (
+						<>
+							Should I reserve the{' '}
+							<span className="sm:hidden">
+								{getRouteBySlug(routeSlug)?.fromShort} to{' '}
+								{getRouteBySlug(routeSlug)?.toShort}
+							</span>
+							<span className="hidden sm:inline">
+								{getRouteBySlug(routeSlug)?.from} to {getRouteBySlug(routeSlug)?.to}
+							</span>{' '}
+							ferry?
+						</>
+					) : (
+						title
+					)}
+				</h1>
+				<Link href="/" className="text-sm sm:text-base">
 					History
 				</Link>
 			</div>
-			<ol>
+			<ol className="pl-6 sm:pl-8">
 				<li>
-					<label htmlFor="route">
+					<label htmlFor="route" className="sm:hidden">
+						Route
+					</label>
+					<label htmlFor="route" className="hidden sm:inline">
 						{routeSlug
 							? `Route: ${getRouteBySlug(routeSlug)?.from} to ${
 									getRouteBySlug(routeSlug)?.to

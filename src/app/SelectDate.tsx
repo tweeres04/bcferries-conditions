@@ -22,6 +22,7 @@ export default function SelectDate({ selectDate, dates, defaultValue }: Props) {
 			id="date"
 			value={date ?? undefined}
 			defaultValue={defaultValue}
+			className="w-full"
 		>
 			<option value="">Select a date</option>
 			{dates.map((d) => {

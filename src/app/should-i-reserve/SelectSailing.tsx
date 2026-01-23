@@ -19,6 +19,7 @@ export default function SelectSailing({ selectSailing, sailings }: Props) {
 			}}
 			defaultValue={sailing}
 			id="sailing"
+			className="w-full"
 		>
 			<option value="">Select a sailing</option>
 			{sailings.map((s) => (
