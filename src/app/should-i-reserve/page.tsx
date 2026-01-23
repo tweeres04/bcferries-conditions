@@ -61,7 +61,7 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 	const dowEntriesPromise =
 		dow !== undefined && route !== undefined && sailing !== undefined
 			? getEntriesForDow({ dow, route, sailing })
-			: Promise.resolve()
+			: Promise.resolve(undefined)
 
 	const [routes, sailings, dowEntries] = await Promise.all([
 		routesPromise,
@@ -70,39 +70,15 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 	])
 
 	return (
-		<div className="container mx-auto prose sm:prose-lg px-1 py-2 should-i-reserve">
-			<div className="flex items-center gap-3">
-				<h1 className="grow">Should I reserve the ferry?</h1>
-				<Link href="/" className="text-center">
-					History
-				</Link>
-			</div>
-			<ShouldIReserveForm
-				routes={routes}
-				sailings={sailings}
-				dowEntries={dowEntries}
-				date={date}
-				sailing={sailing}
-				route={route || ''}
-				baseUrl="/should-i-reserve"
-			/>
-			<footer className="text-center py-32">
-				<p>
-					By{' '}
-					<a href="https://tweeres.ca" title="Tyler Weeres">
-						Tyler Weeres
-					</a>
-				</p>
-				<p>
-					Ferry boat icons created by{' '}
-					<a
-						href="https://www.flaticon.com/free-icons/ferry-boat"
-						title="ferry boat icons"
-					>
-						Freepik - Flaticon
-					</a>
-				</p>
-			</footer>
-		</div>
+		<ShouldIReserveForm
+			title="Should I reserve the ferry?"
+			routes={routes}
+			sailings={sailings}
+			dowEntries={dowEntries}
+			date={date}
+			sailing={sailing}
+			route={route || ''}
+			baseUrl="/should-i-reserve"
+		/>
 	)
 }
