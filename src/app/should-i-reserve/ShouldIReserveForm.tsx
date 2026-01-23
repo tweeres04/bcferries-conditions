@@ -1,7 +1,6 @@
-'use client'
-
 import SelectDate from '../SelectDate'
 import SelectSailing from './SelectSailing'
+import SelectRoute from '../SelectRoute'
 import { formatTime } from '../formatTime'
 import {
 	formatISO,
@@ -14,9 +13,9 @@ import {
 } from 'date-fns'
 import { getHolidayForDate } from '../holidays'
 import { TZDate } from '@date-fns/tz'
-import { useRouter } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { getRouteBySlug, getSlugByRouteCode, type RouteSlug } from './routeMapping'
-import { routeLabels, type RouteCode } from '../routeLabels'
+import { selectValue } from '../selectValue'
 
 type Props = {
 	routes: { route: string }[]
@@ -42,49 +41,9 @@ export default function ShouldIReserveForm({
 	routeSlug,
 	baseUrl,
 }: Props) {
-	const router = useRouter()
 	const parsedDate = date ? new Date(date) : undefined
 	const dow = parsedDate ? parsedDate.getDay() : undefined
 	const holiday = date ? getHolidayForDate(date) : undefined
-
-	const handleRouteChange = (newRoute: string) => {
-		// If on a route-specific page, navigate to the matching route page
-		if (routeSlug) {
-			const newRouteSlug = getSlugByRouteCode(newRoute)
-
-			if (newRouteSlug) {
-				// Preserve date and sailing query params when changing route
-				const params = new URLSearchParams()
-				if (date) params.set('date', date)
-				if (sailing) params.set('sailing', sailing)
-				const queryString = params.toString()
-				router.push(`/should-i-reserve/${newRouteSlug}${queryString ? `?${queryString}` : ''}`)
-			}
-		} else {
-			// On generic page, update query param
-			const params = new URLSearchParams()
-			if (newRoute) params.set('route', newRoute)
-			if (date) params.set('date', date)
-			if (sailing) params.set('sailing', sailing)
-			router.push(`${baseUrl}?${params.toString()}`)
-		}
-	}
-
-	const handleDateChange = (newDate: string) => {
-		const params = new URLSearchParams()
-		if (route) params.set('route', route)
-		if (newDate) params.set('date', newDate)
-		if (sailing) params.set('sailing', sailing)
-		router.push(`${baseUrl}?${params.toString()}`)
-	}
-
-	const handleSailingChange = (newSailing: string) => {
-		const params = new URLSearchParams()
-		if (route) params.set('route', route)
-		if (date) params.set('date', date)
-		if (newSailing) params.set('sailing', newSailing)
-		router.push(`${baseUrl}?${params.toString()}`)
-	}
 
 	return (
 		<ol>
@@ -92,18 +51,27 @@ export default function ShouldIReserveForm({
 				<label htmlFor="route">
 					{routeSlug ? `Route: ${getRouteBySlug(routeSlug)?.from} to ${getRouteBySlug(routeSlug)?.to}` : 'What route?'}
 				</label>
-				<select
-					onChange={(e) => handleRouteChange(e.target.value)}
-					value={route}
-					id="route"
-				>
-					<option value="">Select a route</option>
-					{(routes as { route: RouteCode }[]).map((d) => (
-						<option key={d.route} value={d.route}>
-							{routeLabels[d.route] ?? d.route}
-						</option>
-					))}
-				</select>
+				<SelectRoute
+					selectRoute={
+						routeSlug
+							? async (searchParams, newRoute) => {
+									'use server'
+									const newRouteSlug = getSlugByRouteCode(newRoute)
+									const params = new URLSearchParams(searchParams)
+									if (newRouteSlug) {
+										redirect(
+											`/should-i-reserve/${newRouteSlug}?${params.toString()}`
+										)
+									} else {
+										params.set('route', newRoute)
+										redirect(`/should-i-reserve?${params.toString()}`)
+									}
+							  }
+							: selectValue(baseUrl, 'route')
+					}
+					routes={routes}
+					defaultValue={route}
+				/>
 			</li>
 			<li>
 				<label htmlFor="date">What date?</label>
@@ -116,7 +84,7 @@ export default function ShouldIReserveForm({
 							representation: 'date',
 						}),
 					}))}
-					selectDate={async (_, newDate) => handleDateChange(newDate)}
+					selectDate={selectValue(baseUrl, 'date')}
 				/>
 			</li>
 
@@ -124,7 +92,7 @@ export default function ShouldIReserveForm({
 				<label htmlFor="sailing">What sailing?</label>
 				<SelectSailing
 					sailings={sailings}
-					selectSailing={async (_, newSailing) => handleSailingChange(newSailing)}
+					selectSailing={selectValue(baseUrl, 'sailing')}
 				/>
 			</li>
 			{date && sailing && dow !== undefined ? (
