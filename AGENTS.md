@@ -155,5 +155,5 @@ Required variables:
 4.  **Tab Indentation**: Do not use spaces for indentation.
 5.  **Proactive Improvements**: If you see an opportunity to add a unit test or improve type safety, do so.
 6.  **Environment Variables**: Use `process.env.PGHOST`, `PGDATABASE`, etc. for DB connections. In local dev, these are often loaded via `.env.local` or `dotenvx`.
-7.  Do not push to the `main` branch.
+7.  Do not push to the `main` branch unless instructed to.
 8.  When completing tasks, do not commit unless the user instructs it.
