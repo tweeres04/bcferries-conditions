@@ -46,7 +46,6 @@ export default async function Home({ searchParams }: Props) {
 
 	let { date, route, sailings: sailingsParam } = searchParams
 
-	// Find a better approach than -7 offset
 	date =
 		date ??
 		formatISO(TZDate.tz('America/Vancouver'), { representation: 'date' })
@@ -64,7 +63,7 @@ export default async function Home({ searchParams }: Props) {
 		where: and(
 			eq(entries.date, date),
 			eq(entries.route, route),
-			sailings ? inArray(entries.time, sailings) : undefined
+			sailings ? inArray(entries.time, sailings) : undefined,
 		),
 		orderBy: entries.timestamp,
 	})

@@ -12,6 +12,14 @@ type Props = {
 
 export default function SelectDate({ selectDate, dates, defaultValue }: Props) {
 	const searchParams = useSearchParams()
+	const dateInUrl = searchParams.get('date')
+
+	// Ensure the date from the URL is always in the list, even if outside the standard range
+	const allDates = [...dates]
+	if (dateInUrl && !allDates.find((d) => d.date === dateInUrl)) {
+		allDates.push({ date: dateInUrl })
+		allDates.sort((a, b) => a.date.localeCompare(b.date))
+	}
 
 	return (
 		<select
@@ -19,11 +27,11 @@ export default function SelectDate({ selectDate, dates, defaultValue }: Props) {
 				selectDate(Array.from(searchParams.entries()), event.target.value)
 			}}
 			id="date"
-			value={searchParams.get('date') ?? defaultValue ?? ''}
+			value={dateInUrl ?? defaultValue ?? ''}
 			className="w-full"
 		>
 			<option value="">Select a date</option>
-			{dates.map((d) => {
+			{allDates.map((d) => {
 				const dateInBcTime = parseISO(d.date, { in: tz('America/Vancouver') })
 				return (
 					<option key={d.date} value={d.date}>
