@@ -12,7 +12,6 @@ type Props = {
 
 export default function SelectDate({ selectDate, dates, defaultValue }: Props) {
 	const searchParams = useSearchParams()
-	const date = searchParams.get('date')
 
 	return (
 		<select
@@ -20,8 +19,7 @@ export default function SelectDate({ selectDate, dates, defaultValue }: Props) {
 				selectDate(Array.from(searchParams.entries()), event.target.value)
 			}}
 			id="date"
-			value={date ?? undefined}
-			defaultValue={defaultValue}
+			value={searchParams.get('date') ?? defaultValue ?? ''}
 			className="w-full"
 		>
 			<option value="">Select a date</option>

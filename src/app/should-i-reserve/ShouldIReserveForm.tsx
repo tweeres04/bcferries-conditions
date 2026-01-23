@@ -59,7 +59,6 @@ export default function ShouldIReserveForm({
 					<SelectRoute
 						selectRoute={selectValue(baseUrl, 'route')}
 						routes={routes}
-						defaultValue={route}
 					/>
 				</li>
 				<li>

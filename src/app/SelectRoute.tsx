@@ -15,15 +15,13 @@ export default function SelectRoute({
 	defaultValue,
 }: Props) {
 	const searchParams = useSearchParams()
-	const route = searchParams.get('route') ?? undefined
 
 	return (
 		<select
 			onChange={(event) => {
 				selectRoute(Array.from(searchParams.entries()), event.target.value)
 			}}
-			value={route}
-			defaultValue={defaultValue}
+			value={searchParams.get('route') ?? defaultValue ?? ''}
 			id="route"
 			className="w-full"
 		>
