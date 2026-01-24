@@ -155,5 +155,8 @@ Required variables:
 4.  **Tab Indentation**: Do not use spaces for indentation.
 5.  **Proactive Improvements**: If you see an opportunity to add a unit test or improve type safety, do so.
 6.  **Environment Variables**: Use `process.env.PGHOST`, `PGDATABASE`, etc. for DB connections. In local dev, these are often loaded via `.env.local` or `dotenvx`.
-7.  Do not push to the `main` branch unless instructed to.
-8.  When completing tasks, do not commit unless the user instructs it.
+7.  **Git Workflow**:
+    - Do not commit or push to `main` unless explicitly instructed to do so.
+    - Each feature/task requires separate, explicit permission to commit and push.
+    - Previous "ship it" instructions do NOT carry over to new features.
+    - After completing implementation and testing, always ask: "Should I commit and push these changes?"
