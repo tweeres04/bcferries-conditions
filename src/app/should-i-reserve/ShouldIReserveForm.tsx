@@ -2,6 +2,7 @@ import SelectDate from '../SelectDate'
 import SelectSailing from './SelectSailing'
 import SelectRoute from '../SelectRoute'
 import { formatTime } from '../formatTime'
+import FeedbackDialog from './FeedbackDialog'
 import {
 	formatISO,
 	eachDayOfInterval,
@@ -180,6 +181,14 @@ export default function ShouldIReserveForm({
 								<a href="https://www.bcferries.com/RouteSelectionPage">
 									reservation page
 								</a>
+							</li>
+						</ul>
+					</li>
+					<li>
+						<label>Have feedback or suggestions?</label>
+						<ul>
+							<li>
+								<FeedbackDialog />
 							</li>
 						</ul>
 					</li>
