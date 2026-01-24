@@ -7,6 +7,8 @@ import { Metadata } from 'next'
 import { getEntriesForDow } from './getEntriesForDow'
 import ShouldIReserveForm from './ShouldIReserveForm'
 import { getRouteByCode } from './routeMapping'
+import { formatTime } from '../formatTime'
+import { generateBreadcrumbSchema, generateFaqSchema } from './structuredData'
 import {
 	getHolidayBySlug,
 	getNextOccurrence,
@@ -39,15 +41,22 @@ const dayOfWeekMap: Record<string, Day> = {
 export async function generateMetadata({
 	searchParams,
 }: Props): Promise<Metadata> {
-	const { route, holiday: holidaySlug, date: dateParam, day } = searchParams
+	const {
+		route,
+		holiday: holidaySlug,
+		date: dateParam,
+		day,
+		sailing,
+	} = searchParams
 	const routeInfo = route ? getRouteByCode(route) : undefined
 	const holidayInfo = holidaySlug ? getHolidayBySlug(holidaySlug) : undefined
+	const sailingTime = sailing ? formatTime(sailing) : undefined
 
 	let date = dateParam
 	if (!date && day && dayOfWeekMap[day.toLowerCase()] !== undefined) {
 		date = formatISO(
 			nextDay(TZDate.tz('America/Vancouver'), dayOfWeekMap[day.toLowerCase()]),
-			{ representation: 'date' }
+			{ representation: 'date' },
 		)
 	}
 
@@ -64,27 +73,46 @@ export async function generateMetadata({
 		'Use past sailing stats to decide whether to reserve. Enter your route, date, and sailing time and learn how full the ferry got over the past few weeks.'
 
 	if (effectiveHolidayInfo && routeInfo) {
-		title = `Should I reserve the ${routeInfo.fromShort} to ${routeInfo.toShort} ferry on ${effectiveHolidayInfo.name}? - BC Ferries Conditions`
-		description = `Check historical capacity and travel trends for the ${routeInfo.from} to ${routeInfo.to} ferry on ${effectiveHolidayInfo.name}. Use past data to decide if you need a reservation.`
+		title = `Should I reserve the ${sailingTime ? `${sailingTime} ` : ''}${
+			routeInfo.fromShort
+		} to ${routeInfo.toShort} ferry on ${effectiveHolidayInfo.name}? - BC Ferries Conditions`
+		description = `Check historical capacity for the ${
+			sailingTime ? `${sailingTime} ` : ''
+		}sailing from ${routeInfo.from} to ${routeInfo.to} on ${
+			effectiveHolidayInfo.name
+		}. Use past data to decide if you need a reservation.`
 	} else if (effectiveHolidayInfo) {
 		title = `Should I reserve the ferry on ${effectiveHolidayInfo.name}? - BC Ferries Conditions`
 		description = `Planning to travel on ${effectiveHolidayInfo.name}? See historical BC Ferries capacity and learn if you should reserve your sailing.`
 	} else if (routeInfo && day && !dateParam) {
-		const dayCapitalized = day.charAt(0).toUpperCase() + day.slice(1).toLowerCase()
-		title = `Should I reserve the ${routeInfo.from} to ${routeInfo.to} ferry on ${dayCapitalized}s? - BC Ferries Conditions`
-		description = `Planning a ${dayCapitalized} trip? See historical capacity for the ${routeInfo.from} to ${routeInfo.to} ferry and decide if you should reserve.`
+		const dayCapitalized =
+			day.charAt(0).toUpperCase() + day.slice(1).toLowerCase()
+		title = `Should I reserve the ${sailingTime ? `${sailingTime} ` : ''}${
+			routeInfo.from
+		} to ${routeInfo.to} ferry on ${dayCapitalized}s? - BC Ferries Conditions`
+		description = `Planning a ${dayCapitalized} trip? See historical capacity for the ${
+			sailingTime ? `${sailingTime} ` : ''
+		}sailing from ${routeInfo.from} to ${routeInfo.to} and decide if you should reserve.`
 	} else if (routeInfo) {
-		title = `Should I reserve the ${routeInfo.from} to ${routeInfo.to} ferry? - BC Ferries Conditions`
-		description = `Use past sailing stats to decide whether to reserve the ${routeInfo.from} to ${routeInfo.to} ferry. See how full this route got over the past few weeks.`
+		title = `Should I reserve the ${sailingTime ? `${sailingTime} ` : ''}${
+			routeInfo.from
+		} to ${routeInfo.to} ferry? - BC Ferries Conditions`
+		description = `Use past sailing stats to decide whether to reserve the ${
+			sailingTime ? `${sailingTime} ` : ''
+		}ferry from ${routeInfo.from} to ${
+			routeInfo.to
+		}. See how full this route got over the past few weeks.`
 	} else if (day && !dateParam) {
-		const dayCapitalized = day.charAt(0).toUpperCase() + day.slice(1).toLowerCase()
+		const dayCapitalized =
+			day.charAt(0).toUpperCase() + day.slice(1).toLowerCase()
 		title = `Should I reserve the ferry on ${dayCapitalized}s? - BC Ferries Conditions`
 		description = `Planning to travel on a ${dayCapitalized}? See historical BC Ferries capacity and learn if you should reserve your sailing.`
 	}
 
-
 	const params = new URLSearchParams()
 	if (route) params.set('route', route)
+	if (sailing) params.set('sailing', sailing)
+
 	if (effectiveHolidayInfo) {
 		params.set('holiday', holidaySlug!)
 		// If the date matches the next occurrence of this holiday, we don't need the date param in the canonical URL
@@ -129,7 +157,13 @@ function getSailings() {
 }
 
 export default async function ShouldIReserve({ searchParams }: Props) {
-	const { holiday: holidaySlug, route, sailing, date: dateParam, day } = searchParams
+	const {
+		holiday: holidaySlug,
+		route,
+		sailing,
+		date: dateParam,
+		day,
+	} = searchParams
 
 	// If date and day are both provided, redirect to remove day as date is more specific
 	if (dateParam && day) {
@@ -142,7 +176,7 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 	if (!date && day && dayOfWeekMap[day.toLowerCase()] !== undefined) {
 		date = formatISO(
 			nextDay(TZDate.tz('America/Vancouver'), dayOfWeekMap[day.toLowerCase()]),
-			{ representation: 'date' }
+			{ representation: 'date' },
 		)
 	}
 
@@ -193,8 +227,12 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 	const routesPromise = getRoutes()
 	const sailingsPromise = getSailings()
 
-	const parsedDate = date ? parseISO(date, { in: tz('America/Vancouver') }) : undefined
-	const dow = parsedDate ? getDay(parsedDate, { in: tz('America/Vancouver') }) : undefined
+	const parsedDate = date
+		? parseISO(date, { in: tz('America/Vancouver') })
+		: undefined
+	const dow = parsedDate
+		? getDay(parsedDate, { in: tz('America/Vancouver') })
+		: undefined
 
 	const dowEntriesPromise =
 		dow !== undefined && route !== undefined && sailing !== undefined
@@ -209,65 +247,90 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 
 	const routeInfo = route ? getRouteByCode(route) : undefined
 
+	const breadcrumbList = generateBreadcrumbSchema({
+		route,
+		routeInfo,
+		day,
+		sailing,
+	})
+
+	const faqPage = generateFaqSchema({
+		routeInfo,
+		sailing,
+		day,
+	})
+
 	return (
-		<ShouldIReserveForm
-			title={
-				holidayInfo ? (
-					<>
-						Should I reserve the{' '}
-						{routeInfo ? (
-							<>
-								<span className="sm:hidden">
-									{routeInfo.fromShort} to {routeInfo.toShort}
-								</span>
-								<span className="hidden sm:inline">
-									{routeInfo.from} to {routeInfo.to}
-								</span>
-							</>
-						) : (
-							'ferry'
-						)}{' '}
-						on {holidayInfo.name}?
-					</>
-				) : routeInfo && day ? (
-					<>
-						Should I reserve the{' '}
-						<span className="sm:hidden">
-							{routeInfo.fromShort} to {routeInfo.toShort}
-						</span>
-						<span className="hidden sm:inline">
-							{routeInfo.from} to {routeInfo.to}
-						</span>{' '}
-						ferry on {day.charAt(0).toUpperCase() + day.slice(1).toLowerCase()}s?
-					</>
-				) : routeInfo ? (
-					<>
-						Should I reserve the{' '}
-						<span className="sm:hidden">
-							{routeInfo.fromShort} to {routeInfo.toShort}
-						</span>
-						<span className="hidden sm:inline">
-							{routeInfo.from} to {routeInfo.to}
-						</span>{' '}
-						ferry?
-					</>
-				) : day ? (
-					<>
-						Should I reserve the ferry on{' '}
-						{day.charAt(0).toUpperCase() + day.slice(1).toLowerCase()}s?
-					</>
-				) : (
-					'Should I reserve the ferry?'
-				)
-			}
-			routes={routes}
-			sailings={sailings}
-			dowEntries={dowEntries}
-			date={date}
-			sailing={sailing}
-			route={route || ''}
-			baseUrl="/should-i-reserve"
-		/>
+		<>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }}
+			/>
+			{faqPage && (
+				<script
+					type="application/ld+json"
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPage) }}
+				/>
+			)}
+			<ShouldIReserveForm
+				title={
+					holidayInfo ? (
+						<>
+							Should I reserve the{' '}
+							{routeInfo ? (
+								<>
+									<span className="sm:hidden">
+										{routeInfo.fromShort} to {routeInfo.toShort}
+									</span>
+									<span className="hidden sm:inline">
+										{routeInfo.from} to {routeInfo.to}
+									</span>
+								</>
+							) : (
+								'ferry'
+							)}{' '}
+							on {holidayInfo.name}?
+						</>
+					) : routeInfo && day ? (
+						<>
+							Should I reserve the{' '}
+							<span className="sm:hidden">
+								{routeInfo.fromShort} to {routeInfo.toShort}
+							</span>
+							<span className="hidden sm:inline">
+								{routeInfo.from} to {routeInfo.to}
+							</span>{' '}
+							ferry on{' '}
+							{day.charAt(0).toUpperCase() + day.slice(1).toLowerCase()}s?
+						</>
+					) : routeInfo ? (
+						<>
+							Should I reserve the{' '}
+							<span className="sm:hidden">
+								{routeInfo.fromShort} to {routeInfo.toShort}
+							</span>
+							<span className="hidden sm:inline">
+								{routeInfo.from} to {routeInfo.to}
+							</span>{' '}
+							ferry?
+						</>
+					) : day ? (
+						<>
+							Should I reserve the ferry on{' '}
+							{day.charAt(0).toUpperCase() + day.slice(1).toLowerCase()}s?
+						</>
+					) : (
+						'Should I reserve the ferry?'
+					)
+				}
+				routes={routes}
+				sailings={sailings}
+				dowEntries={dowEntries}
+				date={date}
+				sailing={sailing}
+				route={route || ''}
+				baseUrl="/should-i-reserve"
+			/>
+		</>
 	)
 }
-
