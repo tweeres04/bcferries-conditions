@@ -120,9 +120,12 @@ export async function generateMetadata({
 		if (date !== nextDate) {
 			if (date) params.set('date', date)
 		}
-	} else {
-		if (date) params.set('date', date)
-		if (day) params.set('day', day)
+	} else if (day) {
+		params.set('day', day)
+		// Only set date if it was explicitly provided in searchParams to keep canonicals stable
+		if (dateParam) params.set('date', dateParam)
+	} else if (date) {
+		params.set('date', date)
 	}
 	const queryString = params.toString()
 
