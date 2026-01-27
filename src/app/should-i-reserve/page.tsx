@@ -249,6 +249,7 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 		routeInfo,
 		sailing,
 		day,
+		holidayName: holidayInfo?.name,
 	})
 
 	return (

@@ -29,8 +29,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
 			})
 		})
 
-	// Add stable recurring day-of-week pages (Friday, Sunday, Monday are peak)
-	const days = ['friday', 'sunday', 'monday']
+	// Add stable recurring day-of-week pages (Friday, Saturday, Sunday, Monday are peak)
+	const days = ['friday', 'saturday', 'sunday', 'monday']
 	const peakDayPages = days.flatMap((day) => {
 		return getAllRouteCodes().map((route) => ({
 			url: `${baseUrl}/should-i-reserve?route=${route}&day=${day}`,

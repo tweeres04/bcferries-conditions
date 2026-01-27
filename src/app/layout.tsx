@@ -1,8 +1,13 @@
 import { Poppins } from 'next/font/google'
 import Script from 'next/script'
+import { Metadata } from 'next'
 import './globals.css'
 
 const poppins = Poppins({ subsets: ['latin'], weight: '400' })
+
+export const metadata: Metadata = {
+	metadataBase: new URL('https://bcferries-conditions.tweeres.ca'),
+}
 
 export default function RootLayout({
 	children,
