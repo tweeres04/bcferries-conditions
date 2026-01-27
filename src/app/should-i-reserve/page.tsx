@@ -1,8 +1,8 @@
 import { getRoutes } from '../getRoutes'
-import { parseISO, formatISO, nextDay, Day, getDay } from 'date-fns'
+import { parseISO, getDay } from 'date-fns'
 import { getDb } from '../getDb'
 import { entries } from '@/schema'
-import { gte, sql } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import { Metadata } from 'next'
 import { getEntriesForDow } from './getEntriesForDow'
 import ShouldIReserveForm from './ShouldIReserveForm'
@@ -16,7 +16,9 @@ import {
 	getHolidaySlug,
 } from '../holidays'
 import { redirect } from 'next/navigation'
-import { TZDate, tz } from '@date-fns/tz'
+import { tz } from '@date-fns/tz'
+import { inferDateFromDay, capitalizeDay } from './helpers'
+import RouteDisplay from './RouteDisplay'
 
 type Props = {
 	searchParams: {
@@ -26,16 +28,6 @@ type Props = {
 		holiday?: string
 		day?: string
 	}
-}
-
-const dayOfWeekMap: Record<string, Day> = {
-	sunday: 0,
-	monday: 1,
-	tuesday: 2,
-	wednesday: 3,
-	thursday: 4,
-	friday: 5,
-	saturday: 6,
 }
 
 export async function generateMetadata({
@@ -53,11 +45,8 @@ export async function generateMetadata({
 	const sailingTime = sailing ? formatTime(sailing) : undefined
 
 	let date = dateParam
-	if (!date && day && dayOfWeekMap[day.toLowerCase()] !== undefined) {
-		date = formatISO(
-			nextDay(TZDate.tz('America/Vancouver'), dayOfWeekMap[day.toLowerCase()]),
-			{ representation: 'date' },
-		)
+	if (!date && day) {
+		date = inferDateFromDay(day)
 	}
 
 	// If date doesn't match holiday, don't show holiday metadata
@@ -85,8 +74,7 @@ export async function generateMetadata({
 		title = `Should I reserve the ferry on ${effectiveHolidayInfo.name}? - BC Ferries Conditions`
 		description = `Planning to travel on ${effectiveHolidayInfo.name}? See historical BC Ferries capacity and learn if you should reserve your sailing.`
 	} else if (routeInfo && day && !dateParam) {
-		const dayCapitalized =
-			day.charAt(0).toUpperCase() + day.slice(1).toLowerCase()
+		const dayCapitalized = capitalizeDay(day)
 		title = `Should I reserve the ${sailingTime ? `${sailingTime} ` : ''}${
 			routeInfo.from
 		} to ${routeInfo.to} ferry on ${dayCapitalized}s? - BC Ferries Conditions`
@@ -103,8 +91,7 @@ export async function generateMetadata({
 			routeInfo.to
 		}. See how full this route got over the past few weeks.`
 	} else if (day && !dateParam) {
-		const dayCapitalized =
-			day.charAt(0).toUpperCase() + day.slice(1).toLowerCase()
+		const dayCapitalized = capitalizeDay(day)
 		title = `Should I reserve the ferry on ${dayCapitalized}s? - BC Ferries Conditions`
 		description = `Planning to travel on a ${dayCapitalized}? See historical BC Ferries capacity and learn if you should reserve your sailing.`
 	}
@@ -149,13 +136,18 @@ export async function generateMetadata({
 	}
 }
 
-function getSailings() {
+function getSailings(dow?: number) {
 	const db = getDb()
+
+	const condition =
+		dow !== undefined
+			? sql`extract(dow from ${entries.date}) = ${dow} AND ${entries.date} >= current_date - interval '12 weeks'`
+			: sql`${entries.date} >= current_date - interval '1 week'`
 
 	return db
 		.selectDistinct({ time: entries.time })
 		.from(entries)
-		.where(gte(entries.date, sql`current_date - interval '1 week'`))
+		.where(condition)
 		.orderBy(entries.time)
 }
 
@@ -176,11 +168,8 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 	}
 
 	let date = dateParam
-	if (!date && day && dayOfWeekMap[day.toLowerCase()] !== undefined) {
-		date = formatISO(
-			nextDay(TZDate.tz('America/Vancouver'), dayOfWeekMap[day.toLowerCase()]),
-			{ representation: 'date' },
-		)
+	if (!date && day) {
+		date = inferDateFromDay(day)
 	}
 
 	const holidayInfo = holidaySlug ? getHolidayBySlug(holidaySlug) : undefined
@@ -219,7 +208,6 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 		}
 	}
 
-	// If a holiday is selected but no date is provided, derive the next occurrence
 	if (holidayInfo && !date) {
 		const nextDate = getNextOccurrence(holidayInfo.name)
 		if (nextDate) {
@@ -227,15 +215,15 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 		}
 	}
 
-	const routesPromise = getRoutes()
-	const sailingsPromise = getSailings()
-
 	const parsedDate = date
 		? parseISO(date, { in: tz('America/Vancouver') })
 		: undefined
 	const dow = parsedDate
 		? getDay(parsedDate, { in: tz('America/Vancouver') })
 		: undefined
+
+	const routesPromise = getRoutes()
+	const sailingsPromise = getSailings(dow)
 
 	const dowEntriesPromise =
 		dow !== undefined && route !== undefined && sailing !== undefined
@@ -280,47 +268,21 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 					holidayInfo ? (
 						<>
 							Should I reserve the{' '}
-							{routeInfo ? (
-								<>
-									<span className="sm:hidden">
-										{routeInfo.fromShort} to {routeInfo.toShort}
-									</span>
-									<span className="hidden sm:inline">
-										{routeInfo.from} to {routeInfo.to}
-									</span>
-								</>
-							) : (
-								'ferry'
-							)}{' '}
-							on {holidayInfo.name}?
+							{routeInfo ? <RouteDisplay routeInfo={routeInfo} /> : 'ferry'} on{' '}
+							{holidayInfo.name}?
 						</>
 					) : routeInfo && day ? (
 						<>
-							Should I reserve the{' '}
-							<span className="sm:hidden">
-								{routeInfo.fromShort} to {routeInfo.toShort}
-							</span>
-							<span className="hidden sm:inline">
-								{routeInfo.from} to {routeInfo.to}
-							</span>{' '}
-							ferry on{' '}
-							{day.charAt(0).toUpperCase() + day.slice(1).toLowerCase()}s?
+							Should I reserve the <RouteDisplay routeInfo={routeInfo} /> ferry
+							on {capitalizeDay(day)}s?
 						</>
 					) : routeInfo ? (
 						<>
-							Should I reserve the{' '}
-							<span className="sm:hidden">
-								{routeInfo.fromShort} to {routeInfo.toShort}
-							</span>
-							<span className="hidden sm:inline">
-								{routeInfo.from} to {routeInfo.to}
-							</span>{' '}
-							ferry?
+							Should I reserve the <RouteDisplay routeInfo={routeInfo} /> ferry?
 						</>
 					) : day ? (
 						<>
-							Should I reserve the ferry on{' '}
-							{day.charAt(0).toUpperCase() + day.slice(1).toLowerCase()}s?
+							Should I reserve the ferry on {capitalizeDay(day)}s?
 						</>
 					) : (
 						'Should I reserve the ferry?'
@@ -333,6 +295,7 @@ export default async function ShouldIReserve({ searchParams }: Props) {
 				sailing={sailing}
 				route={route || ''}
 				baseUrl="/should-i-reserve"
+				dow={dow}
 			/>
 		</>
 	)

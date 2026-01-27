@@ -17,7 +17,9 @@ import { getHolidayForDate } from '../holidays'
 import { TZDate, tz } from '@date-fns/tz'
 import { selectValue } from '../selectValue'
 import Link from 'next/link'
-import { ReactNode } from 'react'
+import { ReactNode, Suspense } from 'react'
+import DailySummaryTable from './DailySummaryTable'
+import DailySummaryTableSkeleton from './DailySummaryTableSkeleton'
 
 type Props = {
 	title: ReactNode
@@ -31,6 +33,7 @@ type Props = {
 	sailing?: string
 	route: string
 	baseUrl: string
+	dow?: number
 }
 
 export default function ShouldIReserveForm({
@@ -42,9 +45,16 @@ export default function ShouldIReserveForm({
 	sailing,
 	route,
 	baseUrl,
+	dow: dowProp,
 }: Props) {
-	const parsedDate = date ? parseISO(date, { in: tz('America/Vancouver') }) : undefined
-	const dow = parsedDate ? getDay(parsedDate, { in: tz('America/Vancouver') }) : undefined
+	const parsedDate = date
+		? parseISO(date, { in: tz('America/Vancouver') })
+		: undefined
+	const dow =
+		dowProp ??
+		(parsedDate
+			? getDay(parsedDate, { in: tz('America/Vancouver') })
+			: undefined)
 	const holiday = date ? getHolidayForDate(date) : undefined
 
 	return (
@@ -87,6 +97,19 @@ export default function ShouldIReserveForm({
 						selectSailing={selectValue(baseUrl, 'sailing')}
 						defaultValue={sailing}
 					/>
+					{dow !== undefined && route && !sailing ? (
+						<Suspense
+							key={`${dow}-${route}-${date}`}
+							fallback={<DailySummaryTableSkeleton />}
+						>
+							<DailySummaryTable
+								dow={dow}
+								route={route}
+								date={date}
+								baseUrl={baseUrl}
+							/>
+						</Suspense>
+					) : null}
 				</li>
 				{date && sailing && dow !== undefined ? (
 					<>
@@ -111,7 +134,7 @@ export default function ShouldIReserveForm({
 								Last{' '}
 								{format(
 									previousDay(TZDate.tz('America/Vancouver'), dow as Day),
-									'EEEE'
+									'EEEE',
 								)}{' '}
 								the {formatTime(sailing)} ferry:
 							</label>
@@ -161,10 +184,14 @@ export default function ShouldIReserveForm({
 														className="text-sm bg-blue-100 px-2 py-1 rounded-sm whitespace-nowrap"
 														title={`${holiday.name} on ${format(
 															holiday.observedDate,
-															'E MMM d, yyyy'
+															'E MMM d, yyyy',
 														)}`}
 													>
-														{getDay(de.date, { in: tz('America/Vancouver') }) === 3 ? 'Holiday' : 'Long weekend'}
+														{getDay(de.date, {
+															in: tz('America/Vancouver'),
+														}) === 3
+															? 'Holiday'
+															: 'Long weekend'}
 													</span>
 												) : null}
 											</li>
@@ -176,25 +203,24 @@ export default function ShouldIReserveForm({
 						<li>
 							<label>When you&apos;re ready, make your reservation:</label>
 							<ul>
-							<li>
-								BC Ferries&apos;{' '}
-								<a href="https://www.bcferries.com/RouteSelectionPage">
-									reservation page
-								</a>
-							</li>
-						</ul>
-					</li>
-					<li>
-						<label>Have feedback or suggestions?</label>
-						<ul>
-							<li>
-								<FeedbackDialog />
-							</li>
-						</ul>
-					</li>
-				</>
-			) : null}
-
+								<li>
+									BC Ferries&apos;{' '}
+									<a href="https://www.bcferries.com/RouteSelectionPage">
+										reservation page
+									</a>
+								</li>
+							</ul>
+						</li>
+						<li>
+							<label>Have feedback or suggestions?</label>
+							<ul>
+								<li>
+									<FeedbackDialog />
+								</li>
+							</ul>
+						</li>
+					</>
+				) : null}
 			</ol>
 			<footer className="text-center py-32">
 				<p>
