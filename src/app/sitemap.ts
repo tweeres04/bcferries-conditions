@@ -1,5 +1,8 @@
 import type { MetadataRoute } from 'next'
-import { getAllRouteCodes } from './should-i-reserve/routeMapping'
+import {
+	getAllRouteCodes,
+	getAllRouteSlugs,
+} from './should-i-reserve/routeMapping'
 import { getUniqueHolidays, getNextOccurrence } from './holidays'
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -56,6 +59,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
 		})
 	})
 
+	// Add busiest ferry times pages
+	const allDays = [
+		'monday',
+		'tuesday',
+		'wednesday',
+		'thursday',
+		'friday',
+		'saturday',
+		'sunday',
+	]
+	const busiestFerryTimesHub = {
+		url: `${baseUrl}/busiest-ferry-times`,
+	}
+	const busiestFerryTimesPages = getAllRouteSlugs().flatMap((routeSlug) => {
+		return allDays.map((day) => ({
+			url: `${baseUrl}/busiest-ferry-times/${routeSlug}/${day}`,
+		}))
+	})
+
 	const allPages = [
 		{
 			url: baseUrl,
@@ -68,6 +90,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
 		...holidayRoutePages,
 		...peakDayPages,
 		...peakSailingPages,
+		busiestFerryTimesHub,
+		...busiestFerryTimesPages,
 	]
 
 	return allPages

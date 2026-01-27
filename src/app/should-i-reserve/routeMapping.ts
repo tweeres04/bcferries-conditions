@@ -5,6 +5,7 @@ const routeConfig = {
 		to: 'Victoria (Swartz Bay)',
 		fromShort: 'Tsawwassen',
 		toShort: 'Swartz Bay',
+		slug: 'tsawwassen-to-swartz-bay',
 	},
 	'victoria-vancouver': {
 		code: 'SWB-TSA',
@@ -12,6 +13,7 @@ const routeConfig = {
 		to: 'Vancouver (Tsawwassen)',
 		fromShort: 'Swartz Bay',
 		toShort: 'Tsawwassen',
+		slug: 'swartz-bay-to-tsawwassen',
 	},
 } as const
 
@@ -28,4 +30,12 @@ export function getSlugByRouteCode(code: string) {
 
 export function getRouteByCode(code: string) {
 	return Object.values(routeConfig).find((info) => info.code === code)
+}
+
+export function getRouteBySlug(slug: string) {
+	return Object.values(routeConfig).find((info) => info.slug === slug)
+}
+
+export function getAllRouteSlugs(): string[] {
+	return Object.values(routeConfig).map((info) => info.slug)
 }
