@@ -3,6 +3,7 @@ import SelectSailing from './SelectSailing'
 import SelectRoute from '../SelectRoute'
 import { formatTime } from '../formatTime'
 import FeedbackDialog from './FeedbackDialog'
+import Footer from '@/components/Footer'
 import {
 	formatISO,
 	eachDayOfInterval,
@@ -98,17 +99,25 @@ export default function ShouldIReserveForm({
 						defaultValue={sailing}
 					/>
 					{dow !== undefined && route && !sailing ? (
-						<Suspense
-							key={`${dow}-${route}-${date}`}
-							fallback={<DailySummaryTableSkeleton />}
-						>
-							<DailySummaryTable
-								dow={dow}
-								route={route}
-								date={date}
-								baseUrl={baseUrl}
-							/>
-						</Suspense>
+						<div className="mt-8 not-prose">
+							<label className="font-bold">
+								Typical {format(parsedDate || new Date(), 'EEEE')} sailings over
+								the past 12 weeks:
+							</label>
+							<div className="mt-3">
+								<Suspense
+									key={`${dow}-${route}-${date}`}
+									fallback={<DailySummaryTableSkeleton />}
+								>
+									<DailySummaryTable
+										dow={dow}
+										route={route}
+										date={date}
+										baseUrl={baseUrl}
+									/>
+								</Suspense>
+							</div>
+						</div>
 					) : null}
 				</li>
 				{date && sailing && dow !== undefined ? (
@@ -222,23 +231,7 @@ export default function ShouldIReserveForm({
 					</>
 				) : null}
 			</ol>
-			<footer className="text-center py-32">
-				<p>
-					By{' '}
-					<a href="https://tweeres.ca" title="Tyler Weeres">
-						Tyler Weeres
-					</a>
-				</p>
-				<p>
-					Ferry boat icons created by{' '}
-					<a
-						href="https://www.flaticon.com/free-icons/ferry-boat"
-						title="ferry boat icons"
-					>
-						Freepik - Flaticon
-					</a>
-				</p>
-			</footer>
+			<Footer />
 		</div>
 	)
 }

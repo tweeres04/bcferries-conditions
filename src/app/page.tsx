@@ -11,6 +11,7 @@ import SelectRoute from './SelectRoute'
 import { getRoutes } from './getRoutes'
 import { selectValue } from './selectValue'
 import Link from 'next/link'
+import Footer from '@/components/Footer'
 
 const title =
 	'BC Ferries Conditions Analytics - Plan your ferry ride stress-free'
@@ -97,23 +98,7 @@ export default async function Home({ searchParams }: Props) {
 				/>
 			</div>
 			<Chart entries={results} />
-			<footer className="text-center py-32">
-				<p>
-					By{' '}
-					<a href="https://tweeres.ca" title="Tyler Weeres">
-						Tyler Weeres
-					</a>
-				</p>
-				<p>
-					Ferry boat icons created by{' '}
-					<a
-						href="https://www.flaticon.com/free-icons/ferry-boat"
-						title="ferry boat icons"
-					>
-						Freepik - Flaticon
-					</a>
-				</p>
-			</footer>
+			<Footer />
 		</div>
 	)
 }
