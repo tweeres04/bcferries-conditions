@@ -19,11 +19,11 @@ import Footer from '@/components/Footer'
 export const metadata: Metadata = {
 	title: 'Which ferries fill up? - BC Ferries Conditions',
 	description:
-		'See which BC Ferries sailings typically fill up — so you know when to book ahead and when you can probably just show up.',
+		'See which BC Ferries sailings typically fill up so you know when to book ahead and when you can probably just show up.',
 	openGraph: {
 		title: 'Which ferries fill up? - BC Ferries Conditions',
 		description:
-			'See which BC Ferries sailings typically fill up — so you know when to book ahead and when you can probably just show up.',
+			'See which BC Ferries sailings typically fill up so you know when to book ahead and when you can probably just show up.',
 	},
 }
 
@@ -89,7 +89,7 @@ export default function BusiestFerryTimesHub() {
 				})}
 			</div>
 
-			<CheckSpecificDateCTA href="/should-i-reserve" />
+			<CheckSpecificDateCTA href="/" />
 
 			<Footer />
 		</div>

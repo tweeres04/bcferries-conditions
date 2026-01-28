@@ -9,7 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 	const baseUrl = 'https://bcferries-conditions.tweeres.ca'
 
 	const routePages = getAllRouteCodes().map((code: string) => ({
-		url: `${baseUrl}/should-i-reserve?route=${code}`,
+		url: `${baseUrl}?route=${code}`,
 	}))
 
 	const holidayPages = getUniqueHolidays()
@@ -17,7 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 		.map((holiday) => {
 			const query = new URLSearchParams({ holiday: holiday.slug })
 			return {
-				url: `${baseUrl}/should-i-reserve?${query.toString()}`,
+				url: `${baseUrl}?${query.toString()}`,
 			}
 		})
 
@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 			return getAllRouteCodes().map((route: string) => {
 				const query = new URLSearchParams({ holiday: holiday.slug, route })
 				return {
-					url: `${baseUrl}/should-i-reserve?${query.toString()}`,
+					url: `${baseUrl}?${query.toString()}`,
 				}
 			})
 		})
@@ -36,7 +36,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 	const days = ['friday', 'saturday', 'sunday', 'monday']
 	const peakDayPages = days.flatMap((day) => {
 		return getAllRouteCodes().map((route) => ({
-			url: `${baseUrl}/should-i-reserve?route=${route}&day=${day}`,
+			url: `${baseUrl}?route=${route}&day=${day}`,
 		}))
 	})
 
@@ -54,7 +54,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 	const peakSailingPages = days.flatMap((day) => {
 		return getAllRouteCodes().flatMap((route) => {
 			return peakTimes.map((sailing) => ({
-				url: `${baseUrl}/should-i-reserve?route=${route}&day=${day}&sailing=${sailing}`,
+				url: `${baseUrl}?route=${route}&day=${day}&sailing=${sailing}`,
 			}))
 		})
 	})
@@ -83,7 +83,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 			url: baseUrl,
 		},
 		{
-			url: `${baseUrl}/should-i-reserve`,
+			url: `${baseUrl}/history`,
 		},
 		...routePages,
 		...holidayPages,

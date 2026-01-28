@@ -58,8 +58,11 @@ export default async function DailySummaryTable({
 						const isInsufficientData = total < MIN_DATA_POINTS
 
 						let risk = 'Low'
-						let badgeVariant: 'default' | 'secondary' | 'destructive' | 'outline' =
-							'default'
+						let badgeVariant:
+							| 'default'
+							| 'secondary'
+							| 'destructive'
+							| 'outline' = 'default'
 
 						if (isInsufficientData) {
 							risk = 'Not enough data'

@@ -17,7 +17,6 @@ import {
 import { getHolidayForDate } from '../holidays'
 import { TZDate, tz } from '@date-fns/tz'
 import { selectValue } from '../selectValue'
-import Link from 'next/link'
 import { ReactNode, Suspense } from 'react'
 import DailySummaryTable from './DailySummaryTable'
 import DailySummaryTableSkeleton from './DailySummaryTableSkeleton'
@@ -60,12 +59,7 @@ export default function ShouldIReserveForm({
 
 	return (
 		<div className="container mx-auto prose sm:prose-lg px-2 py-4 should-i-reserve">
-			<div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-				<h1 className="text-2xl sm:text-4xl grow mb-0">{title}</h1>
-				<Link href="/" className="text-sm sm:text-base">
-					History
-				</Link>
-			</div>
+			<h1 className="text-2xl sm:text-4xl mb-4 sm:mb-6">{title}</h1>
 			<ol className="pl-6 sm:pl-8">
 				<li>
 					<label htmlFor="route">What route?</label>
@@ -179,7 +173,7 @@ export default function ShouldIReserveForm({
 														: undefined
 												}
 											>
-												<a href={`/?${linkParams}`} target="_blank">
+												<a href={`/history?${linkParams}`} target="_blank">
 													{format(de.date, 'E MMM d, yyyy')}
 												</a>{' '}
 												-{' '}

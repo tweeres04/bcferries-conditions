@@ -112,8 +112,7 @@ export default function BusiestFerryTimesPage({ params }: Props) {
 			<div className="prose max-w-none mb-8">
 				<p>
 					Here&rsquo;s how often each {dayCapitalized} sailing fills up. Red
-					means it&rsquo;s usually full — book ahead. Green means you can
-					probably just show up.
+					means it&rsquo;s usually full, so you might want to book ahead.
 				</p>
 			</div>
 
@@ -122,7 +121,7 @@ export default function BusiestFerryTimesPage({ params }: Props) {
 			</Suspense>
 
 			<CheckSpecificDateCTA
-				href={`/should-i-reserve?route=${routeInfo.code}&day=${day.toLowerCase()}`}
+				href={`/?route=${routeInfo.code}&day=${day.toLowerCase()}`}
 			/>
 
 			<Footer />

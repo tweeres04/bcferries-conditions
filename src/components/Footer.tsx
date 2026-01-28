@@ -1,6 +1,6 @@
 export default function Footer() {
 	return (
-		<footer className="text-center py-32">
+		<footer className="text-center py-32 not-prose">
 			<p>
 				By{' '}
 				<a href="https://tweeres.ca" title="Tyler Weeres">
