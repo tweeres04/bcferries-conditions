@@ -173,7 +173,11 @@ export default function ShouldIReserveForm({
 														: undefined
 												}
 											>
-												<a href={`/history?${linkParams}`} target="_blank">
+												<a
+													href={`/history?${linkParams}`}
+													target="_blank"
+													className="content-link"
+												>
 													{format(de.date, 'E MMM d, yyyy')}
 												</a>{' '}
 												-{' '}
@@ -208,7 +212,10 @@ export default function ShouldIReserveForm({
 							<ul>
 								<li>
 									BC Ferries&apos;{' '}
-									<a href="https://www.bcferries.com/RouteSelectionPage">
+									<a
+										href="https://www.bcferries.com/RouteSelectionPage"
+										className="content-link"
+									>
 										reservation page
 									</a>
 								</li>

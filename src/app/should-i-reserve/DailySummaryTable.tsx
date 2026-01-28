@@ -88,7 +88,7 @@ export default async function DailySummaryTable({
 									{hasLink ? (
 										<Link
 											href={`${baseUrl}?${sailingParams.toString()}`}
-											className="text-blue-600 hover:underline"
+											className="content-link"
 										>
 											{formatTime(summary.time)}
 										</Link>

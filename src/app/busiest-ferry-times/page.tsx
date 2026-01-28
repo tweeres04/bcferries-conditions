@@ -41,7 +41,7 @@ export default function BusiestFerryTimesHub() {
 	const routeSlugs = getAllRouteSlugs()
 
 	return (
-		<div className="container mx-auto px-4 py-8 max-w-4xl">
+		<div className="container mx-auto px-4 py-8 max-w-2xl">
 			<Breadcrumb className="mb-4">
 				<BreadcrumbList>
 					<BreadcrumbItem>
@@ -58,7 +58,7 @@ export default function BusiestFerryTimesHub() {
 
 			<h1 className="text-3xl font-bold mb-4">Which ferries fill up?</h1>
 
-			<div className="prose max-w-none mb-8">
+			<div className="prose max-w-none mb-16">
 				<p>
 					See which sailings typically fill up so you know when to book ahead
 					and when you can probably just show up.

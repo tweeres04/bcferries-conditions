@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-a {
-	@apply text-blue-600;
+.content-link {
+	@apply text-blue-600 hover:underline;
 }
 
 select {
