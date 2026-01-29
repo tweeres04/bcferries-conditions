@@ -25,7 +25,7 @@ export function generateBreadcrumbSchema({
 		{ name: 'Home', item: `${BASE_URL}/` },
 		{
 			name: 'Should I Reserve?',
-			item: `${BASE_URL}/should-i-reserve`,
+			item: `${BASE_URL}`,
 		},
 	]
 
@@ -33,7 +33,7 @@ export function generateBreadcrumbSchema({
 		const params = new URLSearchParams({ route })
 		breadcrumbs.push({
 			name: `${routeInfo.fromShort} to ${routeInfo.toShort}`,
-			item: `${BASE_URL}/should-i-reserve?${params.toString()}`,
+			item: `${BASE_URL}?${params.toString()}`,
 		})
 	}
 
@@ -43,7 +43,7 @@ export function generateBreadcrumbSchema({
 		params.set('day', day)
 		breadcrumbs.push({
 			name: day.charAt(0).toUpperCase() + day.slice(1).toLowerCase(),
-			item: `${BASE_URL}/should-i-reserve?${params.toString()}`,
+			item: `${BASE_URL}?${params.toString()}`,
 		})
 	}
 
@@ -54,7 +54,7 @@ export function generateBreadcrumbSchema({
 		params.set('sailing', sailing)
 		breadcrumbs.push({
 			name: formatTime(sailing),
-			item: `${BASE_URL}/should-i-reserve?${params.toString()}`,
+			item: `${BASE_URL}?${params.toString()}`,
 		})
 	}
 

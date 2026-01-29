@@ -2,8 +2,8 @@ import SelectDate from '../SelectDate'
 import SelectSailing from './SelectSailing'
 import SelectRoute from '../SelectRoute'
 import { formatTime } from '../formatTime'
-import FeedbackDialog from './FeedbackDialog'
 import Footer from '@/components/Footer'
+import BrowseBusiestTimesCTA from '../busiest-ferry-times/BrowseBusiestTimesCTA'
 import {
 	formatISO,
 	eachDayOfInterval,
@@ -221,18 +221,9 @@ export default function ShouldIReserveForm({
 								</li>
 							</ul>
 						</li>
-						<li>
-							<label>Have feedback or suggestions?</label>
-							<ul>
-								<li>
-									<FeedbackDialog />
-								</li>
-							</ul>
-						</li>
 					</>
 				) : null}
 			</ol>
-			<Footer />
 		</div>
 	)
 }

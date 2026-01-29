@@ -1,6 +1,11 @@
+import FeedbackDialog from './FeedbackDialog'
+
 export default function Footer() {
 	return (
 		<footer className="text-center py-32 not-prose">
+			<div className="mb-8">
+				<FeedbackDialog />
+			</div>
 			<p>
 				By{' '}
 				<a href="https://tweeres.ca" title="Tyler Weeres" className="content-link">

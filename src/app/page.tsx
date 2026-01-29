@@ -8,7 +8,10 @@ import { getEntriesForDow } from './should-i-reserve/getEntriesForDow'
 import ShouldIReserveForm from './should-i-reserve/ShouldIReserveForm'
 import { getRouteByCode } from './should-i-reserve/routeMapping'
 import { formatTime } from './formatTime'
-import { generateBreadcrumbSchema, generateFaqSchema } from './should-i-reserve/structuredData'
+import {
+	generateBreadcrumbSchema,
+	generateFaqSchema,
+} from './should-i-reserve/structuredData'
 import {
 	getHolidayBySlug,
 	getNextOccurrence,
@@ -19,6 +22,8 @@ import { redirect } from 'next/navigation'
 import { tz } from '@date-fns/tz'
 import { inferDateFromDay, capitalizeDay } from './should-i-reserve/helpers'
 import RouteDisplay from './should-i-reserve/RouteDisplay'
+import BrowseBusiestTimesCTA from './busiest-ferry-times/BrowseBusiestTimesCTA'
+import Footer from '@/components/Footer'
 
 type Props = {
 	searchParams: {
@@ -253,7 +258,7 @@ export default async function Home({ searchParams }: Props) {
 	})
 
 	return (
-		<>
+		<div className="container mx-auto max-w-2xl space-y-20">
 			<script
 				type="application/ld+json"
 				dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }}
@@ -282,9 +287,7 @@ export default async function Home({ searchParams }: Props) {
 							Should I reserve the <RouteDisplay routeInfo={routeInfo} /> ferry?
 						</>
 					) : day ? (
-						<>
-							Should I reserve the ferry on {capitalizeDay(day)}s?
-						</>
+						<>Should I reserve the ferry on {capitalizeDay(day)}s?</>
 					) : (
 						'Should I reserve the ferry?'
 					)
@@ -298,6 +301,8 @@ export default async function Home({ searchParams }: Props) {
 				baseUrl="/"
 				dow={dow}
 			/>
-		</>
+			<BrowseBusiestTimesCTA />
+			<Footer />
+		</div>
 	)
 }
