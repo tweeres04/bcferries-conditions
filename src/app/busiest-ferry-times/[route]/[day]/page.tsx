@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	}
 
 	const dayCapitalized = capitalizeDay(day)
-	const title = `How full are ${dayCapitalized} ferries from ${routeInfo.fromShort}? - BC Ferries Conditions`
+	const title = `How full are ${dayCapitalized} ferries from ${routeInfo.fromShort}? - BC Ferries Conditions Analytics`
 	const description = `See how often each ${dayCapitalized} sailing from ${routeInfo.fromShort} to ${routeInfo.toShort} fills up. Know when to book ahead and when you can just show up.`
 
 	return {

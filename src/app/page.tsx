@@ -258,7 +258,7 @@ export default async function Home({ searchParams }: Props) {
 	})
 
 	return (
-		<div className="container mx-auto max-w-2xl space-y-20">
+		<>
 			<script
 				type="application/ld+json"
 				dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }}
@@ -269,40 +269,43 @@ export default async function Home({ searchParams }: Props) {
 					dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPage) }}
 				/>
 			)}
-			<ShouldIReserveForm
-				title={
-					holidayInfo ? (
-						<>
-							Should I reserve the{' '}
-							{routeInfo ? <RouteDisplay routeInfo={routeInfo} /> : 'ferry'} on{' '}
-							{holidayInfo.name}?
-						</>
-					) : routeInfo && day ? (
-						<>
-							Should I reserve the <RouteDisplay routeInfo={routeInfo} /> ferry
-							on {capitalizeDay(day)}s?
-						</>
-					) : routeInfo ? (
-						<>
-							Should I reserve the <RouteDisplay routeInfo={routeInfo} /> ferry?
-						</>
-					) : day ? (
-						<>Should I reserve the ferry on {capitalizeDay(day)}s?</>
-					) : (
-						'Should I reserve the ferry?'
-					)
-				}
-				routes={routes}
-				sailings={sailings}
-				dowEntries={dowEntries}
-				date={date}
-				sailing={sailing}
-				route={route || ''}
-				baseUrl="/"
-				dow={dow}
-			/>
-			<BrowseBusiestTimesCTA />
-			<Footer />
-		</div>
+			<div className="container mx-auto max-w-2xl space-y-20 px-2 py-4">
+				<ShouldIReserveForm
+					title={
+						holidayInfo ? (
+							<>
+								Should I reserve the{' '}
+								{routeInfo ? <RouteDisplay routeInfo={routeInfo} /> : 'ferry'}{' '}
+								on {holidayInfo.name}?
+							</>
+						) : routeInfo && day ? (
+							<>
+								Should I reserve the <RouteDisplay routeInfo={routeInfo} />{' '}
+								ferry on {capitalizeDay(day)}s?
+							</>
+						) : routeInfo ? (
+							<>
+								Should I reserve the <RouteDisplay routeInfo={routeInfo} />{' '}
+								ferry?
+							</>
+						) : day ? (
+							<>Should I reserve the ferry on {capitalizeDay(day)}s?</>
+						) : (
+							'Should I reserve the ferry?'
+						)
+					}
+					routes={routes}
+					sailings={sailings}
+					dowEntries={dowEntries}
+					date={date}
+					sailing={sailing}
+					route={route || ''}
+					baseUrl="/"
+					dow={dow}
+				/>
+				<BrowseBusiestTimesCTA />
+				<Footer />
+			</div>
+		</>
 	)
 }

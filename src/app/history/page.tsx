@@ -13,9 +13,9 @@ import Footer from '@/components/Footer'
 import HistoryChartWithData from './HistoryChartWithData'
 import ChartSkeleton from './ChartSkeleton'
 
-const title = 'BC Ferries Historical Conditions - View Past Capacity Data'
+const title = 'View Past Capacity Data - BC Ferries Conditions Analytics'
 const description =
-	"View historical vehicle deck space capacity data for BC Ferries. Track how full sailings were throughout the day."
+	'View historical vehicle deck space capacity data for BC Ferries. Track how full sailings were throughout the day.'
 const url = 'https://bcferries-conditions.tweeres.ca/history'
 
 export const metadata: Metadata = {
@@ -62,7 +62,7 @@ export default async function History({ searchParams }: Props) {
 	const [dates, routes] = await Promise.all([datesPromise, routesPromise])
 
 	return (
-		<div className="container mx-auto px-2">
+		<div className="container mx-auto px-2 space-y-10">
 			<div className="py-1">
 				<SelectRoute
 					selectRoute={selectValue('/history', 'route')}
@@ -77,7 +77,10 @@ export default async function History({ searchParams }: Props) {
 					})}
 				/>
 			</div>
-			<Suspense key={`${date}-${route}-${sailings?.join(',')}`} fallback={<ChartSkeleton />}>
+			<Suspense
+				key={`${date}-${route}-${sailings?.join(',')}`}
+				fallback={<ChartSkeleton />}
+			>
 				<HistoryChartWithData date={date} route={route} sailings={sailings} />
 			</Suspense>
 			<Footer />

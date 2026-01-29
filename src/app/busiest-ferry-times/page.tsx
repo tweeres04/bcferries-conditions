@@ -17,7 +17,7 @@ import CheckSpecificDateCTA from './CheckSpecificDateCTA'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
-	title: 'Which ferries fill up? - BC Ferries Conditions',
+	title: 'Which ferries fill up? - BC Ferries Conditions Analytics',
 	description:
 		'See which BC Ferries sailings typically fill up so you know when to book ahead and when you can probably just show up.',
 	openGraph: {

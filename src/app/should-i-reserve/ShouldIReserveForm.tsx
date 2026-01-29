@@ -58,7 +58,7 @@ export default function ShouldIReserveForm({
 	const holiday = date ? getHolidayForDate(date) : undefined
 
 	return (
-		<div className="container mx-auto prose sm:prose-lg px-2 py-4 should-i-reserve">
+		<div className="container mx-auto prose sm:prose-lg should-i-reserve">
 			<h1 className="text-2xl sm:text-4xl mb-4 sm:mb-6">{title}</h1>
 			<ol className="pl-6 sm:pl-8">
 				<li>
