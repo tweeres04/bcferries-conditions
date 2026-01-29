@@ -39,8 +39,10 @@ export default async function DailySummaryTable({
 				<TableHeader>
 					<TableRow>
 						<TableHead>Sailing</TableHead>
-						<TableHead className="text-right">
-							Full %
+						<TableHead className="text-right flex items-center justify-end">
+							<div>
+								Full <br className="sm:hidden" /> sailings
+							</div>
 							<ColumnInfoButton column="full-percent" />
 						</TableHead>
 						<TableHead>
@@ -83,7 +85,7 @@ export default async function DailySummaryTable({
 						const hasLink = !!baseUrl
 
 						return (
-							<TableRow key={summary.time}>
+							<TableRow key={summary.time} className="space-x-3">
 								<TableCell className="font-medium">
 									{hasLink ? (
 										<Link
@@ -98,7 +100,7 @@ export default async function DailySummaryTable({
 								</TableCell>
 								<TableCell className="text-right">
 									{Math.round(percent)}%
-									<span className="text-xs text-muted-foreground ml-1 hidden sm:inline">
+									<span className="text-xs text-muted-foreground ml-1 sm:inline">
 										({fullCount}/{total})
 									</span>
 								</TableCell>

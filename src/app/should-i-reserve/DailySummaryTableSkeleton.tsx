@@ -15,7 +15,11 @@ export default function DailySummaryTableSkeleton() {
 				<TableHeader>
 					<TableRow>
 						<TableHead>Sailing</TableHead>
-						<TableHead className="text-right">Full %</TableHead>
+						<TableHead className="text-right">
+							Full
+							<br className="sm:hidden" />
+							sailings
+						</TableHead>
 						<TableHead>Risk</TableHead>
 					</TableRow>
 				</TableHeader>
