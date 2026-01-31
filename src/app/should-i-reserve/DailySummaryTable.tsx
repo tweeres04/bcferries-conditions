@@ -17,6 +17,7 @@ type Props = {
 	route: string
 	date?: string
 	baseUrl?: string
+	day?: string
 }
 
 const MIN_DATA_POINTS = 4
@@ -26,6 +27,7 @@ export default async function DailySummaryTable({
 	route,
 	date,
 	baseUrl,
+	day,
 }: Props) {
 	const dailySummary = await getDailySummary({ dow, route })
 
@@ -80,6 +82,7 @@ export default async function DailySummaryTable({
 						const sailingParams = new URLSearchParams()
 						if (route) sailingParams.set('route', route)
 						if (date) sailingParams.set('date', date)
+						if (day) sailingParams.set('day', day)
 						sailingParams.set('sailing', summary.time)
 
 						const hasLink = !!baseUrl

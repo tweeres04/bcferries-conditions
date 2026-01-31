@@ -4,6 +4,7 @@ import { getDb } from './getDb'
 import { entries } from '@/schema'
 import { sql } from 'drizzle-orm'
 import { Metadata } from 'next'
+import Link from 'next/link'
 import { getEntriesForDow } from './should-i-reserve/getEntriesForDow'
 import ShouldIReserveForm from './should-i-reserve/ShouldIReserveForm'
 import { getRouteByCode } from './should-i-reserve/routeMapping'
@@ -17,6 +18,7 @@ import {
 	getNextOccurrence,
 	getHolidayForDate,
 	getHolidaySlug,
+	getUniqueHolidays,
 } from './holidays'
 import { redirect } from 'next/navigation'
 import { tz } from '@date-fns/tz'
@@ -304,6 +306,28 @@ export default async function Home({ searchParams }: Props) {
 					dow={dow}
 				/>
 				<BrowseBusiestTimesCTA />
+
+				{holidayInfo && (
+					<div className="max-w-2xl mx-auto">
+						<div className="text-sm text-gray-600">
+							<span className="text-gray-500">Other holidays:</span>{' '}
+							{getUniqueHolidays()
+								.filter((h) => h.slug !== holidaySlug)
+								.map((holiday, index, arr) => (
+									<span key={holiday.slug}>
+										<Link
+											href={`/?holiday=${holiday.slug}`}
+											className="content-link"
+										>
+											{holiday.name}
+										</Link>
+										{index < arr.length - 1 && ' | '}
+									</span>
+								))}
+						</div>
+					</div>
+				)}
+
 				<Footer />
 			</div>
 		</>

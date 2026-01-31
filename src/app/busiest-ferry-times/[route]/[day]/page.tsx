@@ -2,7 +2,10 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Suspense } from 'react'
-import { getRouteBySlug } from '../../../should-i-reserve/routeMapping'
+import {
+	getRouteBySlug,
+	getOppositeRouteSlug,
+} from '../../../should-i-reserve/routeMapping'
 import { capitalizeDay } from '../../../should-i-reserve/helpers'
 import {
 	Breadcrumb,
@@ -80,6 +83,10 @@ export default function BusiestFerryTimesPage({ params }: Props) {
 	}
 
 	const dayCapitalized = capitalizeDay(day)
+	const oppositeRouteSlug = getOppositeRouteSlug(route)
+	const oppositeRouteInfo = oppositeRouteSlug
+		? getRouteBySlug(oppositeRouteSlug)
+		: undefined
 
 	return (
 		<div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -117,8 +124,46 @@ export default function BusiestFerryTimesPage({ params }: Props) {
 			</div>
 
 			<Suspense fallback={<DailySummaryTableSkeleton />}>
-				<DailySummaryTable dow={dow} route={routeInfo.code} />
+				<DailySummaryTable
+					dow={dow}
+					route={routeInfo.code}
+					baseUrl="/"
+					day={day.toLowerCase()}
+				/>
 			</Suspense>
+
+			<div className="flex gap-2 text-sm mt-8 flex-wrap">
+				{VALID_DAYS.map((d) => (
+					<span key={d}>
+						{d === day.toLowerCase() ? (
+							<span className="text-gray-900 font-medium">
+								{capitalizeDay(d)}
+							</span>
+						) : (
+							<Link
+								href={`/busiest-ferry-times/${route}/${d}`}
+								className="text-gray-600 hover:text-gray-900 underline"
+							>
+								{capitalizeDay(d)}
+							</Link>
+						)}
+						{d !== 'sunday' && <span className="text-gray-400 ml-2">|</span>}
+					</span>
+				))}
+			</div>
+
+			{oppositeRouteInfo && (
+				<div className="mt-16 text-sm text-gray-600">
+					Planning a return trip?{' '}
+					<Link
+						href={`/busiest-ferry-times/${oppositeRouteSlug}/${day.toLowerCase()}`}
+						className="content-link"
+					>
+						Check {oppositeRouteInfo.fromShort} to {oppositeRouteInfo.toShort}{' '}
+						on {dayCapitalized} →
+					</Link>
+				</div>
+			)}
 
 			<CheckSpecificDateCTA
 				href={`/?route=${routeInfo.code}&day=${day.toLowerCase()}`}

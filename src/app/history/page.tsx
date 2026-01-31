@@ -1,8 +1,9 @@
 import { Metadata } from 'next'
 import { entries } from '@/schema'
-import { formatISO } from 'date-fns'
-import { TZDate } from '@date-fns/tz'
+import { formatISO, getDay } from 'date-fns'
+import { TZDate, tz } from '@date-fns/tz'
 import { Suspense } from 'react'
+import Link from 'next/link'
 
 import { getDb } from '../getDb'
 import SelectDate from '../SelectDate'
@@ -12,6 +13,8 @@ import { selectValue } from '../selectValue'
 import Footer from '@/components/Footer'
 import HistoryChartWithData from './HistoryChartWithData'
 import ChartSkeleton from './ChartSkeleton'
+import { getRouteByCode } from '../should-i-reserve/routeMapping'
+import { capitalizeDay } from '../should-i-reserve/helpers'
 
 const title = 'View Past Capacity Data - BC Ferries Conditions Analytics'
 const description =
@@ -61,6 +64,20 @@ export default async function History({ searchParams }: Props) {
 
 	const [dates, routes] = await Promise.all([datesPromise, routesPromise])
 
+	const routeInfo = getRouteByCode(route)
+	const parsedDate = new Date(date + 'T00:00:00')
+	const dow = getDay(parsedDate, { in: tz('America/Vancouver') })
+	const dayNames = [
+		'sunday',
+		'monday',
+		'tuesday',
+		'wednesday',
+		'thursday',
+		'friday',
+		'saturday',
+	]
+	const dayName = dayNames[dow]
+
 	return (
 		<div className="container mx-auto px-2 space-y-10">
 			<div className="py-1">
@@ -83,6 +100,41 @@ export default async function History({ searchParams }: Props) {
 			>
 				<HistoryChartWithData date={date} route={route} sailings={sailings} />
 			</Suspense>
+
+			<div className="space-y-4 text-sm max-w-2xl mx-auto mt-6">
+				<p className="text-gray-700 mb-2">
+					<strong>Want to know if you should reserve?</strong>
+				</p>
+				<Link
+					href={`/?route=${route}&date=${date}`}
+					className="content-link inline-block"
+				>
+					Check the{' '}
+					{new Date(date + 'T00:00:00').toLocaleDateString('en-US', {
+						month: 'short',
+						day: 'numeric',
+						year: 'numeric',
+					})}{' '}
+					{routeInfo ? `${routeInfo.fromShort} to ${routeInfo.toShort}` : ''}{' '}
+					sailing →
+				</Link>
+
+				{routeInfo && (
+					<div>
+						<p className="text-gray-700 mb-2">
+							<strong>See typical {capitalizeDay(dayName)} patterns</strong>
+						</p>
+						<Link
+							href={`/busiest-ferry-times/${routeInfo.slug}/${dayName}`}
+							className="content-link inline-block"
+						>
+							View all {capitalizeDay(dayName)} sailings from{' '}
+							{routeInfo.fromShort} →
+						</Link>
+					</div>
+				)}
+			</div>
+
 			<Footer />
 		</div>
 	)

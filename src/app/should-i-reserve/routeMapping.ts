@@ -39,3 +39,11 @@ export function getRouteBySlug(slug: string) {
 export function getAllRouteSlugs(): string[] {
 	return Object.values(routeConfig).map((info) => info.slug)
 }
+
+export function getOppositeRouteSlug(slug: string): string | undefined {
+	const oppositeMap: Record<string, string> = {
+		'tsawwassen-to-swartz-bay': 'swartz-bay-to-tsawwassen',
+		'swartz-bay-to-tsawwassen': 'tsawwassen-to-swartz-bay',
+	}
+	return oppositeMap[slug]
+}

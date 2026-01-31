@@ -59,7 +59,9 @@ export default function ShouldIReserveForm({
 
 	return (
 		<div className="container mx-auto prose sm:prose-lg should-i-reserve">
-			<h1 className="text-2xl sm:text-4xl mb-4 sm:mb-6">{title}</h1>
+			<h1 className="text-2xl sm:text-4xl mb-4 sm:mb-6 min-h-[96px] flex items-center">
+				<span>{title}</span>
+			</h1>
 			<ol className="pl-6 sm:pl-8">
 				<li>
 					<label htmlFor="route">What route?</label>
