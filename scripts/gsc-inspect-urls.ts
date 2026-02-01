@@ -8,9 +8,11 @@
  * Usage: npx tsx scripts/gsc-inspect-urls.ts
  *
  * Options:
- *   --filter <pattern>  Only show URLs containing this pattern (e.g., --filter "day=friday")
- *   --limit <n>         Limit output to n URLs
- *   --concurrency <n>   Number of concurrent API requests (default: 10)
+ *   --filter <pattern>    Only show URLs containing this pattern (e.g., --filter "day=friday")
+ *   --status <verdict>    Filter by verdict: PASS, NEUTRAL, FAIL, or ERROR
+ *   --limit <n>           Limit output to n URLs
+ *   --concurrency <n>     Number of concurrent API requests (default: 10)
+ *   --csv                 Output as CSV format
  */
 
 import { google } from 'googleapis'
@@ -18,6 +20,16 @@ import pLimit from 'p-limit'
 
 const SITE_URL = 'https://bcferries-conditions.tweeres.ca/'
 const SITEMAP_URL = `${SITE_URL}/sitemap.xml`
+const TIMEZONE = 'America/Vancouver'
+
+type InspectionResult = {
+	url: string
+	link: string | null
+	verdict: string | null // PASS, NEUTRAL, FAIL
+	coverageState: string | null // Human-readable status
+	lastCrawlTime: string | null // RFC3339 timestamp
+	error: string | null // Error message if API call failed
+}
 
 async function fetchSitemap(): Promise<string[]> {
 	const response = await fetch(SITEMAP_URL)
@@ -35,9 +47,28 @@ async function fetchSitemap(): Promise<string[]> {
 	return urls
 }
 
-async function getInspectionLink(
+function formatDateInTimezone(isoString: string | null | undefined): string {
+	if (!isoString) return '-'
+	try {
+		const date = new Date(isoString)
+		return date.toLocaleString('en-US', {
+			timeZone: TIMEZONE,
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			hour12: false,
+		})
+	} catch {
+		return isoString
+	}
+}
+
+async function getInspectionResult(
 	inspectionUrl: string,
-): Promise<string | null> {
+): Promise<InspectionResult> {
 	try {
 		const auth = new google.auth.GoogleAuth({
 			scopes: ['https://www.googleapis.com/auth/webmasters.readonly'],
@@ -56,20 +87,130 @@ async function getInspectionLink(
 			},
 		})
 
-		return response.data.inspectionResult?.inspectionResultLink || null
+		const result = response.data.inspectionResult
+		const indexStatus = result?.indexStatusResult
+
+		return {
+			url: inspectionUrl,
+			link: result?.inspectionResultLink || null,
+			verdict: indexStatus?.verdict || null,
+			coverageState: indexStatus?.coverageState || null,
+			lastCrawlTime: indexStatus?.lastCrawlTime || null,
+			error: null,
+		}
 	} catch (error: any) {
-		console.error(`Error inspecting ${inspectionUrl}:`, error.message)
-		return null
+		return {
+			url: inspectionUrl,
+			link: null,
+			verdict: 'ERROR',
+			coverageState: null,
+			lastCrawlTime: null,
+			error: error.message,
+		}
 	}
+}
+
+function printTable(results: InspectionResult[]) {
+	// Column widths
+	const verdictWidth = 8
+	const coverageWidth = 50
+	const crawlWidth = 20
+	const urlWidth = 60
+
+	// Header
+	console.log(
+		[
+			'Verdict'.padEnd(verdictWidth),
+			'Coverage State'.padEnd(coverageWidth),
+			'Last Crawl'.padEnd(crawlWidth),
+			'URL'.padEnd(urlWidth),
+			'GSC Link',
+		].join(' | '),
+	)
+	console.log(
+		[
+			'-'.repeat(verdictWidth),
+			'-'.repeat(coverageWidth),
+			'-'.repeat(crawlWidth),
+			'-'.repeat(urlWidth),
+			'-'.repeat(50),
+		].join('-|-'),
+	)
+
+	// Rows
+	for (const result of results) {
+		const verdict = (result.verdict || 'ERROR').padEnd(verdictWidth)
+		const coverage = (result.error || result.coverageState || '-').padEnd(
+			coverageWidth,
+		)
+		const crawl = formatDateInTimezone(result.lastCrawlTime).padEnd(crawlWidth)
+		const url = result.url.padEnd(urlWidth)
+		const link = result.link || '-'
+
+		console.log([verdict, coverage, crawl, url, link].join(' | '))
+	}
+}
+
+function printCsv(results: InspectionResult[]) {
+	// Header
+	console.log('verdict,coverageState,lastCrawlTime,url,gscLink,error')
+
+	// Rows
+	for (const result of results) {
+		const row = [
+			result.verdict || 'ERROR',
+			result.coverageState || '',
+			result.lastCrawlTime || '',
+			result.url,
+			result.link || '',
+			result.error || '',
+		]
+		// Escape quotes and wrap in quotes if needed
+		const escaped = row.map((field) => {
+			if (field.includes(',') || field.includes('"') || field.includes('\n')) {
+				return `"${field.replace(/"/g, '""')}"`
+			}
+			return field
+		})
+		console.log(escaped.join(','))
+	}
+}
+
+function printSummary(results: InspectionResult[]) {
+	const counts = {
+		PASS: 0,
+		NEUTRAL: 0,
+		FAIL: 0,
+		ERROR: 0,
+	}
+
+	for (const result of results) {
+		const verdict = result.verdict || 'ERROR'
+		if (verdict in counts) {
+			counts[verdict as keyof typeof counts]++
+		}
+	}
+
+	console.log('='.repeat(80))
+	console.log('Summary:')
+	console.log(`  PASS (Indexed):      ${counts.PASS}`)
+	console.log(`  NEUTRAL (Excluded):  ${counts.NEUTRAL}`)
+	console.log(`  FAIL (Error):        ${counts.FAIL}`)
+	console.log(`  API Errors:          ${counts.ERROR}`)
+	console.log(`  Total:               ${results.length}`)
+	console.log('='.repeat(80))
 }
 
 async function main() {
 	const args = process.argv.slice(2)
 	const filterIndex = args.indexOf('--filter')
+	const statusIndex = args.indexOf('--status')
 	const limitIndex = args.indexOf('--limit')
 	const concurrencyIndex = args.indexOf('--concurrency')
+	const csvFlag = args.includes('--csv')
 
 	const filter = filterIndex !== -1 ? args[filterIndex + 1] : null
+	const statusFilter = statusIndex !== -1 ? args[statusIndex + 1] : null
 	const limit = limitIndex !== -1 ? parseInt(args[limitIndex + 1], 10) : null
 	const concurrency =
 		concurrencyIndex !== -1 ? parseInt(args[concurrencyIndex + 1], 10) : 10
@@ -88,18 +229,18 @@ async function main() {
 	}
 
 	console.log(`Found ${urls.length} URLs`)
-	console.log(`Fetching inspection links (${concurrency} at a time)...\n`)
+	console.log(`Fetching inspection data (${concurrency} at a time)...\n`)
 	console.log('='.repeat(80))
 
 	const limiter = pLimit(concurrency)
-	const results: Array<{ url: string; link: string | null }> = []
+	const results: InspectionResult[] = []
 
 	const tasks = urls.map((url) =>
 		limiter(async () => {
-			const link = await getInspectionLink(url)
-			results.push({ url, link })
+			const result = await getInspectionResult(url)
+			results.push(result)
 			process.stdout.write('.')
-			return { url, link }
+			return result
 		}),
 	)
 
@@ -107,20 +248,27 @@ async function main() {
 
 	console.log('\n')
 	console.log('='.repeat(80))
-	console.log('\nResults:\n')
+	console.log('\n')
 
-	for (const { url, link } of results) {
-		console.log(`Page: ${url}`)
-		if (link) {
-			console.log(`GSC:  ${link}`)
-		} else {
-			console.log(`GSC:  (Unable to get inspection link)`)
-		}
-		console.log('')
+	// Filter by status if requested
+	let filteredResults = results
+	if (statusFilter) {
+		const upperStatus = statusFilter.toUpperCase()
+		filteredResults = results.filter((r) => r.verdict === upperStatus)
+		console.log(
+			`Showing only ${upperStatus} results (${filteredResults.length} of ${results.length})\n`,
+		)
 	}
 
-	console.log('='.repeat(80))
-	console.log(`\nTotal: ${urls.length} URLs`)
+	// Output results
+	if (csvFlag) {
+		printCsv(filteredResults)
+	} else {
+		printTable(filteredResults)
+	}
+
+	console.log('\n')
+	printSummary(results)
 }
 
 main().catch((error) => {
