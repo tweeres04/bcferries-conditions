@@ -26,6 +26,7 @@ import { inferDateFromDay, capitalizeDay } from './should-i-reserve/helpers'
 import RouteDisplay from './should-i-reserve/RouteDisplay'
 import BrowseBusiestTimesCTA from './busiest-ferry-times/BrowseBusiestTimesCTA'
 import Footer from '@/components/Footer'
+import { buildCanonicalUrl } from './buildCanonicalUrl'
 
 type Props = {
 	searchParams: {
@@ -103,40 +104,26 @@ export async function generateMetadata({
 		description = `Planning to travel on a ${dayCapitalized}? See historical BC Ferries capacity and learn if you should reserve your sailing.`
 	}
 
-	const params = new URLSearchParams()
-	if (route) params.set('route', route)
-	if (sailing) params.set('sailing', sailing)
-
-	if (effectiveHolidayInfo) {
-		params.set('holiday', holidaySlug!)
-		// If the date matches the next occurrence of this holiday, we don't need the date param in the canonical URL
-		const nextDate = getNextOccurrence(effectiveHolidayInfo.name)
-		if (date !== nextDate) {
-			if (date) params.set('date', date)
-		}
-	} else if (day) {
-		params.set('day', day)
-		// Only set date if it was explicitly provided in searchParams to keep canonicals stable
-		if (dateParam) params.set('date', dateParam)
-	} else if (date) {
-		params.set('date', date)
-	}
-	const queryString = params.toString()
-
-	const url = `https://bcferries-conditions.tweeres.ca${
-		queryString ? `?${queryString}` : ''
-	}`
+	const canonicalUrl = buildCanonicalUrl({
+		route,
+		sailing,
+		holidaySlug,
+		holidayInfo: effectiveHolidayInfo,
+		day,
+		date,
+		dateParam,
+	})
 
 	return {
 		title,
 		description,
 		alternates: {
-			canonical: url,
+			canonical: canonicalUrl,
 		},
 		openGraph: {
 			title,
 			description,
-			url,
+			url: canonicalUrl,
 			type: 'website',
 			images: 'https://bcferries-conditions.tweeres.ca/should-i-reserve-og.png',
 		},
@@ -259,8 +246,19 @@ export default async function Home({ searchParams }: Props) {
 		holidayName: holidayInfo?.name,
 	})
 
+	const canonicalUrl = buildCanonicalUrl({
+		route,
+		sailing,
+		holidaySlug,
+		holidayInfo,
+		day,
+		date,
+		dateParam,
+	})
+
 	return (
 		<>
+			<link rel="canonical" href={canonicalUrl} />
 			<script
 				type="application/ld+json"
 				dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }}

@@ -20,10 +20,14 @@ export const metadata: Metadata = {
 	title: 'Which ferries fill up? - BC Ferries Conditions Analytics',
 	description:
 		'See which BC Ferries sailings typically fill up so you know when to book ahead and when you can probably just show up.',
+	alternates: {
+		canonical: 'https://bcferries-conditions.tweeres.ca/busiest-ferry-times',
+	},
 	openGraph: {
 		title: 'Which ferries fill up? - BC Ferries Conditions',
 		description:
 			'See which BC Ferries sailings typically fill up so you know when to book ahead and when you can probably just show up.',
+		url: 'https://bcferries-conditions.tweeres.ca/busiest-ferry-times',
 	},
 }
 
