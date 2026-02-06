@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Suspense } from 'react'
+import { Heart } from 'lucide-react'
 import {
 	getRouteBySlug,
 	getOppositeRouteSlug,
@@ -173,6 +174,20 @@ export default function BusiestFerryTimesPage({ params }: Props) {
 			<CheckSpecificDateCTA
 				href={`/?route=${routeInfo.code}&day=${day.toLowerCase()}`}
 			/>
+
+			<div className="mt-6 text-sm text-gray-600">
+				Finding this useful?{' '}
+				<a
+					href={process.env.NEXT_PUBLIC_STRIPE_DONATION_URL}
+					className="content-link"
+					target="_blank"
+					rel="noopener"
+				>
+					Support the project{' '}
+					{/* Lucide icons are display: block by default */}
+					<Heart size={14} fill="currentColor" className="inline" />
+				</a>
+			</div>
 
 			<Footer />
 		</div>

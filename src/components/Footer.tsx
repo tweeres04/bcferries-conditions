@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Heart } from 'lucide-react'
 import FeedbackDialog from './FeedbackDialog'
 
 export default function Footer() {
@@ -37,9 +38,26 @@ export default function Footer() {
 					</Link>
 				</div>
 			</div>
+			<div className="mb-6 text-sm text-gray-600">
+				Finding this useful?{' '}
+				<a
+					href={process.env.NEXT_PUBLIC_STRIPE_DONATION_URL}
+					className="content-link"
+					target="_blank"
+					rel="noopener"
+				>
+					Support the project{' '}
+					{/* Lucide icons are display: block by default */}
+					<Heart size={14} fill="currentColor" className="inline" />
+				</a>
+			</div>
 			<p>
 				By{' '}
-				<a href="https://tweeres.ca" title="Tyler Weeres" className="content-link">
+				<a
+					href="https://tweeres.ca"
+					title="Tyler Weeres"
+					className="content-link"
+				>
 					Tyler Weeres
 				</a>
 			</p>
