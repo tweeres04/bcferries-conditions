@@ -49,11 +49,13 @@ This machine is massive overkill for this workload. Postgres idles at ~50MB RAM.
 
 ## Migration steps
 
+**Note:** Docker setup already exists from local dev, so steps 2 and 5 are mostly done.
+
 1. `pg_dump` from Neon (full backup of the year of historical data)
-2. Spin up Postgres in Docker on the gaming PC
+2. Spin up Postgres in Docker on the gaming PC *(already configured from local dev)*
 3. `pg_restore` the data into the new Postgres
 4. Verify data integrity (row counts, spot check recent entries)
-5. Dockerize the Next.js app
+5. ~~Dockerize the Next.js app~~ *(already done)*
 6. Add to Nginx Proxy Manager (same pattern as existing apps)
 7. Set up environment variables (PGHOST=localhost, etc.)
 8. Test the app end-to-end locally
