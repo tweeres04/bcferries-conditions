@@ -16,7 +16,7 @@ export default function Navigation() {
 		<nav className="container mx-auto px-2 py-4">
 			<div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
 				<Link href="/" className="text-2xl font-normal no-underline">
-					bc ferries conditions
+					bc ferries conditions analytics
 				</Link>
 				<div className="flex gap-4 sm:gap-6 sm:ml-auto">
 					{links.map((link) => {
