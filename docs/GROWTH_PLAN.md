@@ -219,42 +219,16 @@ keywords: ["bc ferries busiest times", "when is bc ferries busy", "best time bc 
 
 ## Monetization Strategy
 
-### When to Monetize
-**Recommended threshold:** 1,000+ monthly visitors
+**See [MONETIZATION.md](./MONETIZATION.md) for the complete monetization strategy.**
 
-### Ad Placement Strategy (Google AdSense)
+The monetization approach is phased by traffic milestones:
 
-| Location | Ad Type | Notes |
-|----------|---------|-------|
-| After results shown | Display ad (300×250 or responsive) | Don't block the tool |
-| Sidebar on blog posts | Display ad (300×600) | Desktop only |
-| Between blog paragraphs | In-article ad | Native style |
-| Footer | Display ad (728×90) | Site-wide |
+- **Phase 1 (<500/mo):** Donation CTA via Stripe ✅ **Complete (Feb 2026)**
+- **Phase 2 (500-5k/mo):** Affiliate links for accommodations + email capture
+- **Phase 3 (5k+/mo):** Direct sales to local businesses (billboard advertisers)
+- **Phase 4 (10k+/mo):** AdSense as supplemental income
 
-**Important:** Never place ads above the fold on the main tool - prioritize UX.
-
-### Ad Platform Progression
-
-| Platform | Minimum Traffic | Est. Revenue (per 1k pageviews) |
-|----------|-----------------|----------------------------------|
-| Google AdSense | None | $2-5 |
-| Ezoic | 10,000/month | $5-10 |
-| Mediavine | 50,000/month | $10-25 |
-
-### Alternative Monetization Ideas
-
-| Strategy | Pros | Cons |
-|----------|------|------|
-| Affiliate links | Non-intrusive, passive | BC Ferries may not have program |
-| Freemium features | Recurring revenue | Need compelling premium features |
-| Sponsored content | High margin | Requires sales effort |
-| Data licensing | High value per deal | Limited market |
-
-**Freemium feature ideas:**
-- Email/SMS alerts when sailings start filling up
-- Personalized weekly travel reports
-- Extended historical data (beyond 12 weeks)
-- Multi-route trip planning
+Key insight: At scale, direct sales to local businesses (hotels, restaurants, attractions along Highway 17) will outperform generic ad networks. The site offers hyper-targeted reach to ferry travelers at the moment they're planning their trip.
 
 ---
 
