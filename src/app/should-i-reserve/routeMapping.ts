@@ -92,3 +92,23 @@ export function getOppositeRouteSlug(slug: string): string | undefined {
 	}
 	return oppositeMap[slug]
 }
+
+// Routes added Feb 7, 2026 need at least 6 weeks of data before showing meaningful stats
+const ROUTE_DATA_AVAILABLE_AFTER: Record<string, string> = {
+	'NAN-HSB': '2026-03-21',
+	'HSB-LNG': '2026-03-21',
+	'LNG-HSB': '2026-03-21',
+	'TSA-DUK': '2026-03-21',
+	'DUK-TSA': '2026-03-21',
+}
+
+export function isRouteCollectingData(routeCode: string): boolean {
+	const cutoffDate = ROUTE_DATA_AVAILABLE_AFTER[routeCode]
+	if (!cutoffDate) return false
+	
+	const today = new Date()
+	today.setHours(0, 0, 0, 0) // Start of today
+	const cutoff = new Date(cutoffDate)
+	
+	return today < cutoff
+}

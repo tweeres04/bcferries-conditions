@@ -2,8 +2,7 @@ import SelectDate from '../SelectDate'
 import SelectSailing from './SelectSailing'
 import SelectRoute from '../SelectRoute'
 import { formatTime } from '../formatTime'
-import Footer from '@/components/Footer'
-import BrowseBusiestTimesCTA from '../busiest-ferry-times/BrowseBusiestTimesCTA'
+import { isRouteCollectingData } from './routeMapping'
 import {
 	formatISO,
 	eachDayOfInterval,
@@ -71,181 +70,199 @@ export default function ShouldIReserveForm({
 						defaultValue={route}
 					/>
 				</li>
-				<li>
-					<label htmlFor="date">What date?</label>
-					<SelectDate
-						dates={eachDayOfInterval({
-							start: TZDate.tz('America/Vancouver'),
-							end: addMonths(TZDate.tz('America/Vancouver'), 6),
-						}).map((s) => ({
-							date: formatISO(s, {
-								representation: 'date',
-							}),
-						}))}
-						selectDate={selectValue(baseUrl, 'date')}
-						defaultValue={date}
-					/>
-				</li>
 
-				<li>
-					<label htmlFor="sailing">What sailing?</label>
-					{sailings.length === 0 ? (
+				{isRouteCollectingData(route) ? (
+					<li>
 						<div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600 mt-2">
-							No sailing data available yet for this route. We just started
-							tracking it. Check back in a few weeks.
+							We just started tracking this route. Check back in a few weeks for
+							sailing stats.
 						</div>
-					) : (
-						<SelectSailing
-							sailings={sailings}
-							selectSailing={selectValue(baseUrl, 'sailing')}
-							defaultValue={sailing}
-						/>
-					)}
-					{dow !== undefined && route && !sailing && sailings.length > 0 ? (
-						<div className="mt-8 not-prose">
-							<label className="font-bold">
-								Typical {format(parsedDate || new Date(), 'EEEE')} sailings over
-								the past 12 weeks:
-							</label>
-							<div className="mt-3">
-								<Suspense
-									key={`${dow}-${route}-${date}`}
-									fallback={<DailySummaryTableSkeleton />}
-								>
-									<DailySummaryTable
-										dow={dow}
-										route={route}
-										date={date}
-										baseUrl={baseUrl}
-									/>
-								</Suspense>
-							</div>
-						</div>
-					) : null}
-				</li>
-				{date && sailing && dow !== undefined ? (
+					</li>
+				) : (
 					<>
-						{dowEntries && dowEntries.every((de) => de.full === null) ? (
-							<li>
-								<label>Historical data:</label>
+						<li>
+							<label htmlFor="date">What date?</label>
+							<SelectDate
+								dates={eachDayOfInterval({
+									start: TZDate.tz('America/Vancouver'),
+									end: addMonths(TZDate.tz('America/Vancouver'), 6),
+								}).map((s) => ({
+									date: formatISO(s, {
+										representation: 'date',
+									}),
+								}))}
+								selectDate={selectValue(baseUrl, 'date')}
+								defaultValue={date}
+							/>
+						</li>
+
+						<li>
+							<label htmlFor="sailing">What sailing?</label>
+							{sailings.length === 0 ? (
 								<div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600 mt-2">
-									We just started tracking this route and sailing. Check back in
-									a few weeks for historical capacity data.
+									No sailing data available yet for this route. We just started
+									tracking it. Check back in a few weeks.
 								</div>
-							</li>
-						) : (
+							) : (
+								<SelectSailing
+									sailings={sailings}
+									selectSailing={selectValue(baseUrl, 'sailing')}
+									defaultValue={sailing}
+								/>
+							)}
+							{dow !== undefined && route && !sailing && sailings.length > 0 ? (
+								<div className="mt-8 not-prose">
+									<label className="font-bold">
+										Typical {format(parsedDate || new Date(), 'EEEE')} sailings
+										over the past 12 weeks:
+									</label>
+									<div className="mt-3">
+										<Suspense
+											key={`${dow}-${route}-${date}`}
+											fallback={<DailySummaryTableSkeleton />}
+										>
+											<DailySummaryTable
+												dow={dow}
+												route={route}
+												date={date}
+												baseUrl={baseUrl}
+											/>
+										</Suspense>
+									</div>
+								</div>
+							) : null}
+						</li>
+						{date && sailing && dow !== undefined ? (
 							<>
-								{holiday ? (
+								{dowEntries && dowEntries.every((de) => de.full === null) ? (
 									<li>
-										<label>
-											{format(date, 'E MMM d, yyyy')} is on a long weekend
-										</label>
-										<ul>
-											<li>
-												{holiday.name} on{' '}
-												{format(holiday.observedDate, 'E MMM d, yyyy')}
-											</li>
-											<li>
-												The ferries are typically much busier on long weekends
-											</li>
-										</ul>
+										<label>Historical data:</label>
+										<div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600 mt-2">
+											We just started tracking this route and sailing. Check
+											back in a few weeks for historical capacity data.
+										</div>
 									</li>
-								) : null}
-								<li>
-									<label>
-										Last{' '}
-										{format(
-											previousDay(TZDate.tz('America/Vancouver'), dow as Day),
-											'EEEE',
-										)}{' '}
-										the {formatTime(sailing)} ferry:
-									</label>
-									{dowEntries ? (
-										<ul>
+								) : (
+									<>
+										{holiday ? (
 											<li>
-												{dowEntries[0].full ? (
-													<>Filled at {format(dowEntries[0].full, 'h:mm a')}</>
-												) : (
-													<>Didn&apos;t fill up</>
-												)}
+												<label>
+													{format(date, 'E MMM d, yyyy')} is on a long weekend
+												</label>
+												<ul>
+													<li>
+														{holiday.name} on{' '}
+														{format(holiday.observedDate, 'E MMM d, yyyy')}
+													</li>
+													<li>
+														The ferries are typically much busier on long
+														weekends
+													</li>
+												</ul>
 											</li>
-										</ul>
-									) : null}
-								</li>
-								<li>
-									<label>
-										Here&apos;s what happened in the last six weeks:
-									</label>
-									{dowEntries ? (
-										<ul>
-											{dowEntries.map((de) => {
-												const holiday = getHolidayForDate(de.date)
-												const linkParams = new URLSearchParams({
-													route: route,
-													date: de.date.slice(0, 10),
-													sailings: sailing,
-												})
-												return (
-													<li
-														key={de.date}
-														className={
-															holiday
-																? ' text-blue-950 marker:text-blue-200'
-																: undefined
-														}
-													>
-														<a
-															href={`/history?${linkParams}`}
-															target="_blank"
-															className="content-link"
-														>
-															{format(de.date, 'E MMM d, yyyy')}
-														</a>{' '}
-														-{' '}
-														{de.full ? (
-															<>Full at {format(de.full, 'h:mm a')}</>
+										) : null}
+										<li>
+											<label>
+												Last{' '}
+												{format(
+													previousDay(
+														TZDate.tz('America/Vancouver'),
+														dow as Day,
+													),
+													'EEEE',
+												)}{' '}
+												the {formatTime(sailing)} ferry:
+											</label>
+											{dowEntries ? (
+												<ul>
+													<li>
+														{dowEntries[0].full ? (
+															<>
+																Filled at {format(dowEntries[0].full, 'h:mm a')}
+															</>
 														) : (
 															<>Didn&apos;t fill up</>
-														)}{' '}
-														{holiday ? (
-															<span
-																className="text-sm bg-blue-100 px-2 py-1 rounded-sm whitespace-nowrap"
-																title={`${holiday.name} on ${format(
-																	holiday.observedDate,
-																	'E MMM d, yyyy',
-																)}`}
-															>
-																{getDay(de.date, {
-																	in: tz('America/Vancouver'),
-																}) === 3
-																	? 'Holiday'
-																	: 'Long weekend'}
-															</span>
-														) : null}
+														)}
 													</li>
-												)
-											})}
-										</ul>
-									) : null}
+												</ul>
+											) : null}
+										</li>
+										<li>
+											<label>
+												Here&apos;s what happened in the last six weeks:
+											</label>
+											{dowEntries ? (
+												<ul>
+													{dowEntries.map((de) => {
+														const holiday = getHolidayForDate(de.date)
+														const linkParams = new URLSearchParams({
+															route: route,
+															date: de.date.slice(0, 10),
+															sailings: sailing,
+														})
+														return (
+															<li
+																key={de.date}
+																className={
+																	holiday
+																		? ' text-blue-950 marker:text-blue-200'
+																		: undefined
+																}
+															>
+																<a
+																	href={`/history?${linkParams}`}
+																	target="_blank"
+																	className="content-link"
+																>
+																	{format(de.date, 'E MMM d, yyyy')}
+																</a>{' '}
+																-{' '}
+																{de.full ? (
+																	<>Full at {format(de.full, 'h:mm a')}</>
+																) : (
+																	<>Didn&apos;t fill up</>
+																)}{' '}
+																{holiday ? (
+																	<span
+																		className="text-sm bg-blue-100 px-2 py-1 rounded-sm whitespace-nowrap"
+																		title={`${holiday.name} on ${format(
+																			holiday.observedDate,
+																			'E MMM d, yyyy',
+																		)}`}
+																	>
+																		{getDay(de.date, {
+																			in: tz('America/Vancouver'),
+																		}) === 3
+																			? 'Holiday'
+																			: 'Long weekend'}
+																	</span>
+																) : null}
+															</li>
+														)
+													})}
+												</ul>
+											) : null}
+										</li>
+									</>
+								)}
+								<li>
+									<label>When you&apos;re ready, make your reservation:</label>
+									<ul>
+										<li>
+											BC Ferries&apos;{' '}
+											<a
+												href="https://www.bcferries.com/RouteSelectionPage"
+												className="content-link"
+											>
+												reservation page
+											</a>
+										</li>
+									</ul>
 								</li>
 							</>
-						)}
-						<li>
-							<label>When you&apos;re ready, make your reservation:</label>
-							<ul>
-								<li>
-									BC Ferries&apos;{' '}
-									<a
-										href="https://www.bcferries.com/RouteSelectionPage"
-										className="content-link"
-									>
-										reservation page
-									</a>
-								</li>
-							</ul>
-						</li>
+						) : null}
 					</>
-				) : null}
+				)}
 			</ol>
 		</div>
 	)

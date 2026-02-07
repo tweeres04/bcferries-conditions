@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { formatTime } from '../formatTime'
 import { getDailySummary } from './getDailySummary'
+import { isRouteCollectingData } from './routeMapping'
 import ColumnInfoButton from './ColumnInfoButton'
 import {
 	Table,
@@ -29,6 +30,18 @@ export default async function DailySummaryTable({
 	baseUrl,
 	day,
 }: Props) {
+	// Check if we're still collecting data for this route (need 6+ weeks)
+	if (isRouteCollectingData(route)) {
+		return (
+			<div className="rounded-md border border-gray-200 bg-gray-50 p-6 text-center text-gray-600">
+				<p className="text-sm">
+					We just started tracking this route. Check back in a few weeks for
+					sailing stats.
+				</p>
+			</div>
+		)
+	}
+
 	const dailySummary = await getDailySummary({ dow, route })
 
 	if (!dailySummary || dailySummary.length === 0) {
