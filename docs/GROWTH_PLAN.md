@@ -95,28 +95,43 @@ Planning a return trip? Check Tsawwassen to Swartz Bay on Thursday →
 
 ### Phase 2: Route Expansion
 
-**Effort:** ~5 hours (plus 4-6 weeks data collection)  
+**Effort:** ~1 hour implementation + 4-6 weeks data collection  
 **Impact:** High (3x pSEO footprint)  
 **Priority:** High
 
 #### Routes to Add
 
-```
-HSB-NAN, NAN-HSB  (Horseshoe Bay ↔ Nanaimo Departure Bay)
-HSB-LNG, LNG-HSB  (Horseshoe Bay ↔ Langdale)
-TSA-DUK, DUK-TSA  (Tsawwassen ↔ Duke Point)
-```
+| Code | Config Key | From | To | From (Short) | To (Short) | Slug |
+|------|-----------|------|-----|--------------|------------|------|
+| `NAN-HSB` | `nanaimo-horseshoe-bay` | Nanaimo (Departure Bay) | Vancouver (Horseshoe Bay) | Departure Bay | Horseshoe Bay | `departure-bay-to-horseshoe-bay` |
+| `HSB-LNG` | `horseshoe-bay-langdale` | Vancouver (Horseshoe Bay) | Sunshine Coast (Langdale) | Horseshoe Bay | Langdale | `horseshoe-bay-to-langdale` |
+| `LNG-HSB` | `langdale-horseshoe-bay` | Sunshine Coast (Langdale) | Vancouver (Horseshoe Bay) | Langdale | Horseshoe Bay | `langdale-to-horseshoe-bay` |
+| `TSA-DUK` | `tsawwassen-duke-point` | Vancouver (Tsawwassen) | Nanaimo (Duke Point) | Tsawwassen | Duke Point | `tsawwassen-to-duke-point` |
+| `DUK-TSA` | `duke-point-tsawwassen` | Nanaimo (Duke Point) | Vancouver (Tsawwassen) | Duke Point | Tsawwassen | `duke-point-to-tsawwassen` |
 
-#### Tasks
+**Note:** HSB-NAN (Horseshoe Bay to Departure Bay) excluded because BC Ferries doesn't publish capacity data for this direction.
 
-| Task | Files | Description |
-|------|-------|-------------|
-| 2.1 Scraping | `src/app/storeEntries.ts` | Add 6 route codes to scraping array |
-| 2.2 Config | `src/app/should-i-reserve/routeMapping.ts` | Add route configurations |
-| 2.3 Sitemap | `src/app/sitemap.ts` | Verify auto-generation (should work) |
-| 2.4 Test | `/api/store_entries` | Verify scraping works for new routes |
+#### Implementation Tasks
 
-#### Route Configuration Template
+##### 1. Test Scraper Compatibility (~20 min) ✅ Complete
+
+**Result:** Existing CSS selectors work on all new routes. No changes needed.
+
+- All routes use `.cc-vessel-percent-full` for capacity percentages
+- Time, vessel, departure, ETA all extract correctly
+- HSB-NAN excluded because BC Ferries doesn't publish capacity data for that direction (only shows "Upcoming" status)
+
+##### 2. Update Route Configuration Files (~15 min) ✅ Complete
+
+Three files need manual updates:
+
+| File | Changes |
+|------|---------|
+| `src/app/storeEntries.ts:42` | Add 5 route codes to `routes` array |
+| `src/app/should-i-reserve/routeMapping.ts` | Add 5 entries to `routeConfig` object + 4 pairs to `oppositeMap` (NAN-HSB has no opposite since HSB-NAN excluded) |
+| `src/app/routeLabels.ts` | Add 5 display labels for dropdown (format: `'CODE': 'From (Terminal) to To (Terminal)'`) |
+
+**Template for `routeMapping.ts` entries:**
 
 ```typescript
 'horseshoe-bay-nanaimo': {
@@ -129,21 +144,55 @@ TSA-DUK, DUK-TSA  (Tsawwassen ↔ Duke Point)
 }
 ```
 
+**Template for `oppositeMap` additions:**
+
+```typescript
+'horseshoe-bay-to-departure-bay': 'departure-bay-to-horseshoe-bay',
+'departure-bay-to-horseshoe-bay': 'horseshoe-bay-to-departure-bay',
+// ... (3 pairs total)
+```
+
+##### 3. Verify Auto-Expanding Components (~5 min)
+
+These files/components automatically expand when `routeMapping.ts` is updated. Run `npm run build` to verify:
+
+| Component | How it Expands |
+|-----------|----------------|
+| `src/app/sitemap.ts` | Reads `getAllRouteCodes()` and `getAllRouteSlugs()` |
+| `src/app/busiest-ferry-times/page.tsx` | Iterates `getAllRouteSlugs()` |
+| `src/app/busiest-ferry-times/[route]/[day]/page.tsx` | Looks up `getRouteBySlug(route)` |
+| `src/app/SelectRoute.tsx` | Gets routes from DB, labels from `routeLabels.ts` |
+| `src/app/getRoutes.ts` | Queries DB for distinct routes dynamically |
+| `src/app/history/page.tsx` | Uses `getRouteByCode()` (default stays `SWB-TSA`) |
+| All query files (`getEntriesForDow`, `getDailySummary`, etc.) | Accept `route` as parameter |
+
+No changes needed in these files.
+
+##### 4. Build and Lint (~5 min)
+
+```bash
+npm run build
+npm run lint
+```
+
+Fix any type errors or issues before deployment.
+
 #### New pSEO Pages Generated
 
-| Route Pair | Busiest Times Pages | Other Pages |
-|------------|---------------------|-------------|
-| HSB ↔ NAN | 14 (7 days × 2 directions) | Route, holiday, sailing pages |
-| HSB ↔ LNG | 14 | Route, holiday, sailing pages |
-| TSA ↔ DUK | 14 | Route, holiday, sailing pages |
+| Route | Busiest Times Pages |
+|-------|---------------------|
+| NAN-HSB (Departure Bay → Horseshoe Bay) | 7 (one direction only) |
+| HSB ↔ LNG (Horseshoe Bay ↔ Langdale) | 14 (7 days × 2 directions) |
+| TSA ↔ DUK (Tsawwassen ↔ Duke Point) | 14 |
 
-**Total new busiest-ferry-times pages:** 42  
-**Total new indexable pages:** ~100+ (including sitemap variations)
+**Total new busiest-ferry-times pages:** 35  
+**Total new indexable pages:** ~90+ (including sitemap variations for holidays, days, sailing times)
 
 #### Data Collection Timeline
-- Routes need 4-6 weeks of hourly scraping before "Full %" stats are meaningful
-- Pages can show immediately with "Not enough data yet" messaging
-- Risk levels show as "Not enough data" when <4 samples
+
+- Routes need 4-6 weeks of scraping (every 15 minutes) before "Full %" stats are meaningful
+- Pages go live immediately; tables show "Not enough data" until 4+ samples collected (per `getDailySummary.ts` logic)
+- No custom "collecting data" message needed; existing UX handles data sparsity gracefully
 
 ---
 
@@ -298,7 +347,7 @@ Not part of immediate plan, but worth considering later:
 ## Technical Notes
 
 ### Scraping Infrastructure
-- Current frequency: Hourly (via cron hitting `/api/store_entries`)
+- Current frequency: Every 15 minutes (via cron hitting `/api/store_entries`)
 - Data stored in Postgres via Drizzle ORM
 - Scraping uses `scrape-it` library
 - BC Ferries URL pattern: `https://www.bcferries.com/current-conditions/{ROUTE-CODE}`
@@ -363,6 +412,15 @@ From `getDailySummary.ts`:
 
 ### Q: When to add ads?
 **A:** Wait until 1,000+ monthly visitors. Start with AdSense for simplicity.
+
+### Q: Show "collecting data" message on new route pages?
+**A:** No - existing "Not enough data" logic in `getDailySummary.ts` handles this gracefully. Pages go live immediately.
+
+### Q: Change history page default from SWB-TSA?
+**A:** No - SWB-TSA is the most popular route, keep it as default.
+
+### Q: BC Ferries page layout compatibility?
+**A:** HSB-LNG and TSA-DUK use a newer page layout with different CSS classes. Must test scraper selectors before deploying route expansion.
 
 ---
 

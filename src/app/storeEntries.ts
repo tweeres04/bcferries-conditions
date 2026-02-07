@@ -39,7 +39,15 @@ function emptyStringsToNull(record: ConditionsResult) {
 export async function getConditions() {
 	'use server'
 
-	const routes = ['SWB-TSA', 'TSA-SWB']
+	const routes = [
+		'SWB-TSA',
+		'TSA-SWB',
+		'NAN-HSB',
+		'HSB-LNG',
+		'LNG-HSB',
+		'TSA-DUK',
+		'DUK-TSA',
+	]
 
 	const data = await Promise.all(
 		routes.flatMap((route) =>
