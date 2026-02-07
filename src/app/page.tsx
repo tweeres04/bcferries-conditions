@@ -131,18 +131,29 @@ export async function generateMetadata({
 	}
 }
 
-function getSailings(dow?: number) {
+function getSailings(dow?: number, route?: string) {
 	const db = getDb()
 
-	const condition =
-		dow !== undefined
-			? sql`extract(dow from ${entries.date}) = ${dow} AND ${entries.date} >= current_date - interval '12 weeks'`
-			: sql`${entries.date} >= current_date - interval '1 week'`
+	const conditions = []
+
+	// Date/dow filter
+	if (dow !== undefined) {
+		conditions.push(
+			sql`extract(dow from ${entries.date}) = ${dow} AND ${entries.date} >= current_date - interval '12 weeks'`
+		)
+	} else {
+		conditions.push(sql`${entries.date} >= current_date - interval '1 week'`)
+	}
+
+	// Route filter
+	if (route) {
+		conditions.push(sql`${entries.route} = ${route}`)
+	}
 
 	return db
 		.selectDistinct({ time: entries.time })
 		.from(entries)
-		.where(condition)
+		.where(sql`${sql.join(conditions, sql` AND `)}`)
 		.orderBy(entries.time)
 }
 
@@ -218,7 +229,7 @@ export default async function Home({ searchParams }: Props) {
 		: undefined
 
 	const routesPromise = getRoutes()
-	const sailingsPromise = getSailings(dow)
+	const sailingsPromise = getSailings(dow, route)
 
 	const dowEntriesPromise =
 		dow !== undefined && route !== undefined && sailing !== undefined
