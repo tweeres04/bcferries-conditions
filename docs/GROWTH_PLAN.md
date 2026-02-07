@@ -9,35 +9,29 @@
 
 This document outlines a three-phase plan to grow the BC Ferries Conditions site from zero traffic to a monetizable asset through:
 
-1. **Internal linking improvements** - Better SEO and user experience (quick wins)
-2. **Route expansion** - 3x the pSEO footprint by adding high-demand routes
+1. **Internal linking improvements** ✅ Complete - Better SEO and user experience
+2. **Route expansion** ✅ Complete - 3x the pSEO footprint by adding high-demand routes
 3. **Blog setup** - Capture informational search queries
 
-**Expected outcome:** 47+ new indexable pages, improved site structure, foundation for ad monetization.
+**Current status (Feb 2026):** Phases 1 and 2 complete. 49 busiest-ferry-times pages live, 5 new routes collecting data. Phase 3 (blog) is next.
 
 ---
 
 ## Current State Analysis
 
 ### Traffic & Routes
-- **Current traffic:** Zero (site is new)
-- **Routes tracked:** 2 (SWB-TSA, TSA-SWB - Victoria ↔ Vancouver via Swartz Bay)
-- **pSEO pages:** 14 (busiest-ferry-times pages: 2 routes × 7 days)
-- **Total indexable pages:** ~115 (including query param variations in sitemap)
-
-### Internal Linking Gaps
-- History page has zero outgoing internal links (isolated)
-- Busiest times detail pages don't cross-link to each other
-- Footer has no internal links (missed site-wide opportunity)
-- DailySummaryTable on busiest times pages doesn't link to main tool
+- **Current traffic:** ~20 users/month (Feb 2026), growing organically
+- **Routes tracked:** 7 (SWB-TSA, TSA-SWB, NAN-HSB, HSB-LNG, LNG-HSB, TSA-DUK, DUK-TSA)
+- **pSEO pages:** 49 (busiest-ferry-times pages across all routes and days)
+- **Total indexable pages:** ~200+ (including sitemap variations, holiday pages, route combinations)
 
 ### SEO Foundation
 - ✅ Dynamic metadata with OpenGraph
 - ✅ JSON-LD structured data (BreadcrumbList, FAQPage)
 - ✅ Comprehensive sitemap
 - ✅ Holiday tracking and pages
+- ✅ Internal linking (footer, day navigation, opposite direction links, history CTAs, clickable rows)
 - ❌ No blog/content hub
-- ❌ Limited internal linking
 
 ---
 
@@ -60,21 +54,21 @@ Based on analysis of BC Ferries traffic patterns and news reports:
 
 ## Implementation Plan
 
-### Phase 1: Internal Linking Improvements
+### Phase 1: Internal Linking Improvements ✅ Complete
 
 **Effort:** ~3 hours  
 **Impact:** Medium (better crawlability, UX)  
-**Priority:** High (quick wins)
+**Status:** All 5 tasks complete
 
-#### Tasks
+#### Tasks (All Complete)
 
-| Task | Files | Description |
-|------|-------|-------------|
-| 1.1 Footer links | `src/components/Footer.tsx` | Add "Quick Links" and "Popular" sections |
-| 1.2 History CTAs | `src/app/history/page.tsx` | Link to main tool and busiest times |
-| 1.3 Day navigation | `src/app/busiest-ferry-times/[route]/[day]/page.tsx` | Add Mon-Sun nav + opposite direction link |
-| 1.4 Clickable rows | `src/app/busiest-ferry-times/[route]/[day]/page.tsx` | Pass `baseUrl` to DailySummaryTable |
-| 1.5 Holiday links | `src/app/page.tsx` | Cross-link holidays when viewing holiday pages |
+| Task | Files | Status |
+|------|-------|--------|
+| 1.1 Footer links | `src/components/Footer.tsx` | ✅ Quick Links and Popular sections added |
+| 1.2 History CTAs | `src/app/history/page.tsx` | ✅ Links to main tool and busiest times |
+| 1.3 Day navigation | `src/app/busiest-ferry-times/[route]/[day]/page.tsx` | ✅ Mon-Sun nav + opposite direction link |
+| 1.4 Clickable rows | `src/app/busiest-ferry-times/[route]/[day]/page.tsx` | ✅ `baseUrl` passed to DailySummaryTable |
+| 1.5 Holiday links | `src/app/page.tsx` | ✅ Holiday cross-linking implemented |
 
 #### Footer Example Structure
 ```
@@ -89,15 +83,15 @@ Monday | Tuesday | Wednesday | [Thursday] | Friday | Saturday | Sunday
 Planning a return trip? Check Tsawwassen to Swartz Bay on Thursday →
 ```
 
-**Expected result:** +40-60 internal links across the site
+**Result:** ~60+ internal links added across the site. Significantly improved crawlability and user navigation.
 
 ---
 
-### Phase 2: Route Expansion
+### Phase 2: Route Expansion ✅ Complete
 
 **Effort:** ~1 hour implementation + 4-6 weeks data collection  
 **Impact:** High (3x pSEO footprint)  
-**Priority:** High
+**Status:** Deployed Feb 2026, data collection in progress
 
 #### Routes to Add
 
@@ -287,7 +281,6 @@ Not part of immediate plan, but worth considering later:
 
 | Improvement | Impact | Effort |
 |-------------|--------|--------|
-| Mobile-first redesign | High | Medium |
 | Push notifications | High | High |
 | Email alerts (free tier) | Medium | Medium |
 | "Best time to leave" recommendation | High | Medium |
@@ -326,21 +319,22 @@ Not part of immediate plan, but worth considering later:
 
 ---
 
-## Implementation Order
+## Implementation Status
 
-1. **Internal linking** (Week 1)
-	- Quick wins, improves crawlability immediately
-	- Foundation for future growth
+1. **Internal linking** ✅ Complete
+	- All 5 tasks complete
+	- ~60+ internal links added site-wide
+	- Improved crawlability and UX
 
-2. **Route expansion** (Week 1)
-	- Start data collection ASAP
-	- Pages can go live with "collecting data" messaging
-	- 4-6 weeks until meaningful stats
+2. **Route expansion** ✅ Complete (data collection in progress)
+	- Deployed Feb 2026
+	- 5 new routes, 35 new busiest-ferry-times pages
+	- Data collecting every 15 minutes, stats available after 4-6 weeks
 
-3. **Blog setup** (Week 2-3)
-	- Can be done in parallel with data collection
-	- Posts can reference new routes
-	- Evergreen content that compounds over time
+3. **Blog setup** - Next priority
+	- Can begin now while route data accumulates
+	- 5 initial posts targeting informational keywords
+	- Infrastructure: MDX, blog index, dynamic routing
 
 ---
 
@@ -354,16 +348,16 @@ Not part of immediate plan, but worth considering later:
 
 ### Route Codes Reference
 
-| Code | Route | Scraping URL |
-|------|-------|--------------|
-| SWB-TSA | Swartz Bay → Tsawwassen | `/current-conditions/SWB-TSA` |
-| TSA-SWB | Tsawwassen → Swartz Bay | `/current-conditions/TSA-SWB` |
-| HSB-NAN | Horseshoe Bay → Departure Bay | `/current-conditions/HSB-NAN` |
-| NAN-HSB | Departure Bay → Horseshoe Bay | `/current-conditions/NAN-HSB` |
-| HSB-LNG | Horseshoe Bay → Langdale | `/current-conditions/HSB-LNG` |
-| LNG-HSB | Langdale → Horseshoe Bay | `/current-conditions/LNG-HSB` |
-| TSA-DUK | Tsawwassen → Duke Point | `/current-conditions/TSA-DUK` |
-| DUK-TSA | Duke Point → Tsawwassen | `/current-conditions/DUK-TSA` |
+| Code | Route | Scraping URL | Status |
+|------|-------|--------------|--------|
+| SWB-TSA | Swartz Bay → Tsawwassen | `/current-conditions/SWB-TSA` | ✅ Active |
+| TSA-SWB | Tsawwassen → Swartz Bay | `/current-conditions/TSA-SWB` | ✅ Active |
+| NAN-HSB | Departure Bay → Horseshoe Bay | `/current-conditions/NAN-HSB` | ✅ Active |
+| HSB-LNG | Horseshoe Bay → Langdale | `/current-conditions/HSB-LNG` | ✅ Active |
+| LNG-HSB | Langdale → Horseshoe Bay | `/current-conditions/LNG-HSB` | ✅ Active |
+| TSA-DUK | Tsawwassen → Duke Point | `/current-conditions/TSA-DUK` | ✅ Active |
+| DUK-TSA | Duke Point → Tsawwassen | `/current-conditions/DUK-TSA` | ✅ Active |
+| HSB-NAN | Horseshoe Bay → Departure Bay | `/current-conditions/HSB-NAN` | ❌ Excluded (no capacity data published by BC Ferries) |
 
 ### Data Requirements for Stats
 From `getDailySummary.ts`:
@@ -426,13 +420,19 @@ From `getDailySummary.ts`:
 
 ## Next Steps
 
-When ready to implement:
+**Immediate priority: Phase 3 (Blog Setup)**
 
-1. Review this plan
-2. Choose starting point (recommend: internal linking first)
-3. Create implementation todos
-4. Begin execution
+See Phase 3 section above for full implementation details. Key tasks:
+1. Install MDX dependencies (`@next/mdx`, `@mdx-js/loader`)
+2. Create blog infrastructure (`src/app/blog/`, `src/content/blog/`)
+3. Write 5 initial posts targeting informational keywords
+4. Update sitemap to include blog URLs
+5. Add blog navigation link
 
-**Estimated total time:** 14 hours of development work + 4-6 weeks data collection + ongoing blog content creation.
+**Estimated time:** ~6 hours
 
-**Expected outcome:** Well-structured site ready to capture search traffic and scale to monetization.
+**Long-term (after blog):**
+- Monitor route expansion data collection (4-6 weeks from Feb 2026)
+- Consider UX improvements (push notifications, email alerts, etc.)
+- Scale monetization as traffic grows (see MONETIZATION.md)
+- Optional: Self-hosting migration to save $15/mo (see SELF_HOSTING_MIGRATION.md)

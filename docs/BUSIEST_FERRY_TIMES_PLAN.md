@@ -1,5 +1,11 @@
 # Busiest Ferry Times Pages - Implementation Plan
 
+**Status:** ✅ Complete (original scope was 2 routes, expanded to 7 routes in Feb 2026)
+
+**Note:** This document is archived. The feature has been fully implemented and expanded beyond the original scope. See GROWTH_PLAN.md Phase 2 for current state.
+
+---
+
 ## Overview
 
 Create standalone "busiest ferry times" guide pages targeting searches like:
