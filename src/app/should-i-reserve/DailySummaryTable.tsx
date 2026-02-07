@@ -32,7 +32,14 @@ export default async function DailySummaryTable({
 	const dailySummary = await getDailySummary({ dow, route })
 
 	if (!dailySummary || dailySummary.length === 0) {
-		return null
+		return (
+			<div className="rounded-md border border-gray-200 bg-gray-50 p-6 text-center text-gray-600">
+				<p className="text-sm">
+					We just started tracking this route. Check back in a few weeks for
+					sailing stats.
+				</p>
+			</div>
+		)
 	}
 
 	return (
