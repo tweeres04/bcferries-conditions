@@ -35,6 +35,10 @@ export default function RootLayout({
 				) : null}
 				<Navigation />
 				{children}
+				<script
+					async
+					src="https://scripts.simpleanalyticscdn.com/latest.js"
+				></script>
 			</body>
 		</html>
 	)
