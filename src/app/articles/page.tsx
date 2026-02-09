@@ -5,7 +5,7 @@ import Footer from '@/components/Footer'
 import { format } from 'date-fns'
 
 export const metadata: Metadata = {
-	title: 'BC Ferries Travel Tips & Guides - BC Ferries Conditions',
+	title: 'BC Ferries Travel Tips & Guides - BC Ferries Conditions Analytics',
 	description:
 		'Expert tips for traveling on BC Ferries. Learn when to reserve, avoid crowds, and plan the perfect ferry trip.',
 	alternates: {

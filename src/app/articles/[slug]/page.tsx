@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	}
 
 	return {
-		title: `${post.title} - BC Ferries Conditions`,
+		title: `${post.title} - BC Ferries Conditions Analytics`,
 		description: post.description,
 		keywords: post.keywords,
 		alternates: {
