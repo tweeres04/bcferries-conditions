@@ -19,9 +19,13 @@ export default function Footer() {
 						Busiest Times
 					</Link>{' '}
 					|{' '}
-					<Link href="/history" className="content-link">
-						History
-					</Link>
+				<Link href="/history" className="content-link">
+					History
+				</Link>{' '}
+				|{' '}
+				<Link href="/articles" className="content-link">
+					Articles
+				</Link>
 				</div>
 				<div>
 					<span className="text-gray-500">Popular:</span>{' '}
