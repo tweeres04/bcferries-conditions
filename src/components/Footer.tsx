@@ -21,6 +21,10 @@ export default function Footer() {
 					|{' '}
 					<Link href="/history" className="content-link">
 						History
+					</Link>{' '}
+					|{' '}
+					<Link href="/articles" className="content-link">
+						Articles
 					</Link>
 				</div>
 				<div>

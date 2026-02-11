@@ -4,6 +4,7 @@ import {
 	getAllRouteSlugs,
 } from './should-i-reserve/routeMapping'
 import { getUniqueHolidays, getNextOccurrence } from './holidays'
+import { getAllBlogPostMeta } from './articles/getBlogPosts'
 
 export default function sitemap(): MetadataRoute.Sitemap {
 	const baseUrl = 'https://bcferries-conditions.tweeres.ca'
@@ -78,6 +79,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
 		}))
 	})
 
+	// Add articles pages
+	const articlesHub = {
+		url: `${baseUrl}/articles`,
+	}
+	const articlePosts = getAllBlogPostMeta().map((post) => ({
+		url: `${baseUrl}/articles/${post.slug}`,
+		lastModified: new Date(post.date),
+	}))
+
 	const allPages = [
 		{
 			url: baseUrl,
@@ -92,6 +102,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
 		...peakSailingPages,
 		busiestFerryTimesHub,
 		...busiestFerryTimesPages,
+		articlesHub,
+		...articlePosts,
 	]
 
 	return allPages

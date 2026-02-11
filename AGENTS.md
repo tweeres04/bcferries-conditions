@@ -41,6 +41,15 @@ Currently, there is no formal test suite (e.g., Vitest, Playwright) configured i
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/) with `@tailwindcss/forms` and `@tailwindcss/typography`.
 - **Dates**: `date-fns` and `@date-fns/tz` for timezone-aware calculations (specifically `America/Vancouver`).
 
+### Branding
+
+**Site Name**: "BC Ferries Conditions Analytics"
+
+- Use "BC Ferries Conditions Analytics" (not "BC Ferries Conditions") in all page titles, meta tags, and schema markup
+- This distinguishes the site from official BC Ferries resources
+- Example: `title: 'Peak Travel Times - BC Ferries Conditions Analytics'`
+- Check all new pages to ensure consistent use of "Analytics" suffix
+
 ---
 
 ## 🎨 Code Style & Conventions

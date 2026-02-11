@@ -73,27 +73,27 @@ export async function generateMetadata({
 	if (effectiveHolidayInfo && routeInfo) {
 		title = `Should I reserve the ${sailingTime ? `${sailingTime} ` : ''}${
 			routeInfo.fromShort
-		} to ${routeInfo.toShort} ferry on ${effectiveHolidayInfo.name}? - BC Ferries Conditions`
+		} to ${routeInfo.toShort} ferry on ${effectiveHolidayInfo.name}? - BC Ferries Conditions Analytics`
 		description = `Check historical capacity for the ${
 			sailingTime ? `${sailingTime} ` : ''
 		}sailing from ${routeInfo.from} to ${routeInfo.to} on ${
 			effectiveHolidayInfo.name
 		}. Use past data to decide if you need a reservation.`
 	} else if (effectiveHolidayInfo) {
-		title = `Should I reserve the ferry on ${effectiveHolidayInfo.name}? - BC Ferries Conditions`
+		title = `Should I reserve the ferry on ${effectiveHolidayInfo.name}? - BC Ferries Conditions Analytics`
 		description = `Planning to travel on ${effectiveHolidayInfo.name}? See historical BC Ferries capacity and learn if you should reserve your sailing.`
 	} else if (routeInfo && day && !dateParam) {
 		const dayCapitalized = capitalizeDay(day)
 		title = `Should I reserve the ${sailingTime ? `${sailingTime} ` : ''}${
 			routeInfo.from
-		} to ${routeInfo.to} ferry on ${dayCapitalized}s? - BC Ferries Conditions`
+		} to ${routeInfo.to} ferry on ${dayCapitalized}s? - BC Ferries Conditions Analytics`
 		description = `Planning a ${dayCapitalized} trip? See historical capacity for the ${
 			sailingTime ? `${sailingTime} ` : ''
 		}sailing from ${routeInfo.from} to ${routeInfo.to} and decide if you should reserve.`
 	} else if (routeInfo) {
 		title = `Should I reserve the ${sailingTime ? `${sailingTime} ` : ''}${
 			routeInfo.from
-		} to ${routeInfo.to} ferry? - BC Ferries Conditions`
+		} to ${routeInfo.to} ferry? - BC Ferries Conditions Analytics`
 		description = `Use past sailing stats to decide whether to reserve the ${
 			sailingTime ? `${sailingTime} ` : ''
 		}ferry from ${routeInfo.from} to ${
@@ -101,7 +101,7 @@ export async function generateMetadata({
 		}. See how full this route got over the past few weeks.`
 	} else if (day && !dateParam) {
 		const dayCapitalized = capitalizeDay(day)
-		title = `Should I reserve the ferry on ${dayCapitalized}s? - BC Ferries Conditions`
+		title = `Should I reserve the ferry on ${dayCapitalized}s? - BC Ferries Conditions Analytics`
 		description = `Planning to travel on a ${dayCapitalized}? See historical BC Ferries capacity and learn if you should reserve your sailing.`
 	}
 
