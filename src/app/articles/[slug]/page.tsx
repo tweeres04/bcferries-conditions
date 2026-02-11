@@ -1,17 +1,20 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getAllBlogPosts, getBlogPostBySlug } from '../getBlogPosts'
+import { getAllBlogPostMeta, getBlogPostBySlug } from '../getBlogPosts'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import Link from 'next/link'
 import Footer from '@/components/Footer'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
+import { tz } from '@date-fns/tz'
 
 type Props = {
 	params: { slug: string }
 }
 
+export const dynamicParams = false
+
 export async function generateStaticParams() {
-	const posts = getAllBlogPosts()
+	const posts = getAllBlogPostMeta()
 	return posts.map((post) => ({
 		slug: post.slug,
 	}))
@@ -121,7 +124,10 @@ export default function BlogPost({ params }: Props) {
 					<header className="mb-8">
 						<h1 className="mb-2">{post.title}</h1>
 						<time className="text-sm text-gray-500">
-							{format(new Date(post.date), 'MMMM d, yyyy')}
+							{format(
+								parseISO(post.date, { in: tz('America/Vancouver') }),
+								'MMMM d, yyyy'
+							)}
 						</time>
 					</header>
 

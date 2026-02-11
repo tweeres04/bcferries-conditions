@@ -7,19 +7,22 @@ export type FAQ = {
 	answer: string
 }
 
-export type BlogPost = {
+export type BlogPostMeta = {
 	slug: string
 	title: string
 	description: string
 	date: string
 	keywords?: string[]
 	faqs?: FAQ[]
+}
+
+export type BlogPost = BlogPostMeta & {
 	content: string
 }
 
 const postsDirectory = path.join(process.cwd(), 'src/content/articles')
 
-export function getAllBlogPosts(): BlogPost[] {
+export function getAllBlogPostMeta(): BlogPostMeta[] {
 	// Check if directory exists
 	if (!fs.existsSync(postsDirectory)) {
 		return []
@@ -32,7 +35,7 @@ export function getAllBlogPosts(): BlogPost[] {
 			const slug = fileName.replace(/\.mdx$/, '')
 			const fullPath = path.join(postsDirectory, fileName)
 			const fileContents = fs.readFileSync(fullPath, 'utf8')
-			const { data, content } = matter(fileContents)
+			const { data } = matter(fileContents)
 
 			return {
 				slug,
@@ -41,7 +44,6 @@ export function getAllBlogPosts(): BlogPost[] {
 				date: data.date,
 				keywords: data.keywords,
 				faqs: data.faqs,
-				content,
 			}
 		})
 

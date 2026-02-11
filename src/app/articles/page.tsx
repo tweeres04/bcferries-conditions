@@ -1,8 +1,9 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { getAllBlogPosts } from './getBlogPosts'
+import { getAllBlogPostMeta } from './getBlogPosts'
 import Footer from '@/components/Footer'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
+import { tz } from '@date-fns/tz'
 
 export const metadata: Metadata = {
 	title: 'BC Ferries Travel Tips & Guides - BC Ferries Conditions Analytics',
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 }
 
 export default function BlogIndex() {
-	const posts = getAllBlogPosts()
+	const posts = getAllBlogPostMeta()
 
 	return (
 		<div className="container mx-auto max-w-3xl px-4 py-8">
@@ -39,7 +40,10 @@ export default function BlogIndex() {
 									</Link>
 								</h2>
 								<time className="text-sm text-gray-500 block mb-3">
-									{format(new Date(post.date), 'MMMM d, yyyy')}
+									{format(
+										parseISO(post.date, { in: tz('America/Vancouver') }),
+										'MMMM d, yyyy'
+									)}
 								</time>
 								<p className="text-gray-700 mb-3">{post.description}</p>
 								<Link
