@@ -178,12 +178,13 @@ export default async function Home({ searchParams }: Props) {
 
 	const holidayInfo = holidaySlug ? getHolidayBySlug(holidaySlug) : undefined
 
-	// If date is provided, check if it's the next occurrence of a holiday and redirect to stable URL if so
-	if (date && !holidaySlug) {
-		const holidayForDate = getHolidayForDate(date)
+	// If an explicit date is provided, check if it's the next occurrence of a holiday and redirect to stable URL if so
+	// Only applies when date was explicitly passed as a param (not inferred from day), to avoid redirect loops
+	if (dateParam && !holidaySlug) {
+		const holidayForDate = getHolidayForDate(dateParam)
 		if (holidayForDate) {
 			const nextDate = getNextOccurrence(holidayForDate.name)
-			if (nextDate === date) {
+			if (nextDate === dateParam) {
 				const params = new URLSearchParams(searchParams)
 				params.set('holiday', getHolidaySlug(holidayForDate.name))
 				params.delete('date')
@@ -192,9 +193,10 @@ export default async function Home({ searchParams }: Props) {
 		}
 	}
 
-	// If date is provided but doesn't match the holiday, redirect to remove the holiday param
-	if (holidaySlug && date) {
-		const holidayForDate = getHolidayForDate(date)
+	// If an explicit date is provided but doesn't match the holiday, redirect to remove the holiday param
+	// Only applies when date was explicitly passed as a param (not inferred from day), to avoid redirect loops
+	if (holidaySlug && dateParam) {
+		const holidayForDate = getHolidayForDate(dateParam)
 		if (getHolidaySlug(holidayForDate?.name ?? '') !== holidaySlug) {
 			const params = new URLSearchParams(searchParams)
 			params.delete('holiday')
@@ -204,7 +206,7 @@ export default async function Home({ searchParams }: Props) {
 		// If it is the holiday and matches the next occurrence, remove the date param for stable URL
 		if (holidayInfo) {
 			const nextDate = getNextOccurrence(holidayInfo.name)
-			if (nextDate === date) {
+			if (nextDate === dateParam) {
 				const params = new URLSearchParams(searchParams)
 				params.delete('date')
 				redirect(`/?${params.toString()}`)
