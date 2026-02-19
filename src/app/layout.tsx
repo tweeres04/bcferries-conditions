@@ -8,6 +8,12 @@ const poppins = Poppins({ subsets: ['latin'], weight: '400' })
 
 export const metadata: Metadata = {
 	metadataBase: new URL('https://bcferries-conditions.tweeres.ca'),
+	title: 'BC Ferries Conditions Analytics',
+	description:
+		'Historical BC Ferries capacity data to help you decide when to reserve and when to show up.',
+	openGraph: {
+		images: '/og.png',
+	},
 }
 
 export default function RootLayout({

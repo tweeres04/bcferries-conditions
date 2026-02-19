@@ -33,6 +33,6 @@ export function buildCanonicalUrl(params: CanonicalUrlParams): string {
 
 	const queryString = canonicalParams.toString()
 	return queryString
-		? `https://bcferries-conditions.tweeres.ca/?${queryString}`
-		: 'https://bcferries-conditions.tweeres.ca/'
+		? `https://bcferries-conditions.tweeres.ca?${queryString}`
+		: 'https://bcferries-conditions.tweeres.ca'
 }

@@ -66,9 +66,9 @@ export async function generateMetadata({
 			? undefined
 			: holidayInfo
 
-	let title = 'Should I reserve the ferry? - BC Ferries Conditions Analytics'
+	let title = 'Should I reserve the BC ferry? - BC Ferries Conditions Analytics'
 	let description =
-		'Use past sailing stats to decide whether to reserve. Enter your route, date, and sailing time and learn how full the ferry got over the past few weeks.'
+		'Check how often your sailing fills up before deciding to reserve. Covers all major BC Ferries routes, updated every 15 minutes.'
 
 	if (effectiveHolidayInfo && routeInfo) {
 		title = `Should I reserve the ${sailingTime ? `${sailingTime} ` : ''}${
@@ -94,11 +94,9 @@ export async function generateMetadata({
 		title = `Should I reserve the ${sailingTime ? `${sailingTime} ` : ''}${
 			routeInfo.from
 		} to ${routeInfo.to} ferry? - BC Ferries Conditions Analytics`
-		description = `Use past sailing stats to decide whether to reserve the ${
+		description = `See how often the ${
 			sailingTime ? `${sailingTime} ` : ''
-		}ferry from ${routeInfo.from} to ${
-			routeInfo.to
-		}. See how full this route got over the past few weeks.`
+		}${routeInfo.fromShort} to ${routeInfo.toShort} ferry fills up, so you know whether to reserve or just show up.`
 	} else if (day && !dateParam) {
 		const dayCapitalized = capitalizeDay(day)
 		title = `Should I reserve the ferry on ${dayCapitalized}s? - BC Ferries Conditions Analytics`
@@ -270,7 +268,6 @@ export default async function Home({ searchParams }: Props) {
 
 	return (
 		<>
-			<link rel="canonical" href={canonicalUrl} />
 			<script
 				type="application/ld+json"
 				dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }}

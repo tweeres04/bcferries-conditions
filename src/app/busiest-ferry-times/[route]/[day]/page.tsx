@@ -57,8 +57,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	}
 
 	const dayCapitalized = capitalizeDay(day)
-	const title = `How full are ${dayCapitalized} ferries from ${routeInfo.fromShort}? - BC Ferries Conditions Analytics`
-	const description = `See how often each ${dayCapitalized} sailing from ${routeInfo.fromShort} to ${routeInfo.toShort} fills up. Know when to book ahead and when you can just show up.`
+	const title = `${dayCapitalized} BC Ferries from ${routeInfo.fromShort}: which sailings fill up? - BC Ferries Conditions Analytics`
+	const description = `See exactly how often each ${dayCapitalized} sailing from ${routeInfo.fromShort} to ${routeInfo.toShort} fills up, based on months of real data. Book the right sailing, or skip the reservation.`
 	const url = `https://bcferries-conditions.tweeres.ca/busiest-ferry-times/${route}/${day}`
 
 	return {

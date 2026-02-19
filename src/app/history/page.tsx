@@ -16,9 +16,9 @@ import ChartSkeleton from './ChartSkeleton'
 import { getRouteByCode } from '../should-i-reserve/routeMapping'
 import { capitalizeDay } from '../should-i-reserve/helpers'
 
-const title = 'View Past Capacity Data - BC Ferries Conditions Analytics'
+const title = 'BC Ferries historical capacity data - BC Ferries Conditions Analytics'
 const description =
-	'View historical vehicle deck space capacity data for BC Ferries. Track how full sailings were throughout the day.'
+	'Browse hourly BC Ferries capacity data by route and date. See exactly how full each sailing was throughout the day.'
 const url = 'https://bcferries-conditions.tweeres.ca/history'
 
 export const metadata: Metadata = {

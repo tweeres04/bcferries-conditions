@@ -6,11 +6,17 @@ import { format, parseISO } from 'date-fns'
 import { tz } from '@date-fns/tz'
 
 export const metadata: Metadata = {
-	title: 'BC Ferries Travel Tips & Guides - BC Ferries Conditions Analytics',
+	title: 'BC Ferries travel tips & guides - BC Ferries Conditions Analytics',
 	description:
-		'Expert tips for traveling on BC Ferries. Learn when to reserve, avoid crowds, and plan the perfect ferry trip.',
+		'Tips for traveling BC Ferries without the stress. When to reserve, which sailings to avoid, and how to read the crowds. Backed by real data.',
 	alternates: {
 		canonical: 'https://bcferries-conditions.tweeres.ca/articles',
+	},
+	openGraph: {
+		title: 'BC Ferries travel tips & guides - BC Ferries Conditions Analytics',
+		description:
+			'Tips for traveling BC Ferries without the stress. When to reserve, which sailings to avoid, and how to read the crowds. Backed by real data.',
+		url: 'https://bcferries-conditions.tweeres.ca/articles',
 	},
 }
 

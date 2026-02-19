@@ -17,16 +17,16 @@ import CheckSpecificDateCTA from './CheckSpecificDateCTA'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
-	title: 'Which ferries fill up? - BC Ferries Conditions Analytics',
+	title: 'BC Ferries busiest sailings by route and day - BC Ferries Conditions Analytics',
 	description:
-		'See which BC Ferries sailings typically fill up so you know when to book ahead and when you can probably just show up.',
+		'See which BC Ferries sailings fill up most often, broken down by route and day of the week. Know when to book ahead and when you can just show up.',
 	alternates: {
 		canonical: 'https://bcferries-conditions.tweeres.ca/busiest-ferry-times',
 	},
 	openGraph: {
-		title: 'Which ferries fill up? - BC Ferries Conditions Analytics',
+		title: 'BC Ferries busiest sailings by route and day - BC Ferries Conditions Analytics',
 		description:
-			'See which BC Ferries sailings typically fill up so you know when to book ahead and when you can probably just show up.',
+			'See which BC Ferries sailings fill up most often, broken down by route and day of the week. Know when to book ahead and when you can just show up.',
 		url: 'https://bcferries-conditions.tweeres.ca/busiest-ferry-times',
 	},
 }
