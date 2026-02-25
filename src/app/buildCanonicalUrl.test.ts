@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { buildCanonicalUrl } from './buildCanonicalUrl'
 
-const BASE_URL = 'https://bcferries-conditions.tweeres.ca/'
+const BASE_URL = 'https://bcferries-conditions.tweeres.ca'
 
 describe('buildCanonicalUrl', () => {
 	describe('base cases', () => {

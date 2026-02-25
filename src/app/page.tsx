@@ -23,7 +23,8 @@ import {
 } from './holidays'
 import { redirect } from 'next/navigation'
 import { tz } from '@date-fns/tz'
-import { inferDateFromDay, capitalizeDay } from './should-i-reserve/helpers'
+import { capitalizeDay } from './should-i-reserve/helpers'
+import { resolveRedirect, resolveDate } from './resolveRedirect'
 import RouteDisplay from './should-i-reserve/RouteDisplay'
 import BrowseBusiestTimesCTA from './busiest-ferry-times/BrowseBusiestTimesCTA'
 import Footer from '@/components/Footer'
@@ -53,10 +54,7 @@ export async function generateMetadata({
 	const holidayInfo = holidaySlug ? getHolidayBySlug(holidaySlug) : undefined
 	const sailingTime = sailing ? formatTime(sailing) : undefined
 
-	let date = dateParam
-	if (!date && day) {
-		date = inferDateFromDay(day)
-	}
+	const date = resolveDate(searchParams)
 
 	// If date doesn't match holiday, don't show holiday metadata
 	const effectiveHolidayInfo =
@@ -164,55 +162,12 @@ export default async function Home({ searchParams }: Props) {
 		day,
 	} = searchParams
 
-	// If date and day are both provided, redirect to remove day as date is more specific
-	if (dateParam && day) {
-		const params = new URLSearchParams(searchParams)
-		params.delete('day')
-		redirect(`/?${params.toString()}`)
-	}
+	const redirectUrl = resolveRedirect(searchParams)
+	if (redirectUrl) redirect(redirectUrl)
 
-	let date = dateParam
-	if (!date && day) {
-		date = inferDateFromDay(day)
-	}
+	let date = resolveDate(searchParams)
 
 	const holidayInfo = holidaySlug ? getHolidayBySlug(holidaySlug) : undefined
-
-	// If an explicit date is provided, check if it's the next occurrence of a holiday and redirect to stable URL if so
-	// Only applies when date was explicitly passed as a param (not inferred from day), to avoid redirect loops
-	if (dateParam && !holidaySlug) {
-		const holidayForDate = getHolidayForDate(dateParam)
-		if (holidayForDate) {
-			const nextDate = getNextOccurrence(holidayForDate.name)
-			if (nextDate === dateParam) {
-				const params = new URLSearchParams(searchParams)
-				params.set('holiday', getHolidaySlug(holidayForDate.name))
-				params.delete('date')
-				redirect(`/?${params.toString()}`)
-			}
-		}
-	}
-
-	// If an explicit date is provided but doesn't match the holiday, redirect to remove the holiday param
-	// Only applies when date was explicitly passed as a param (not inferred from day), to avoid redirect loops
-	if (holidaySlug && dateParam) {
-		const holidayForDate = getHolidayForDate(dateParam)
-		if (getHolidaySlug(holidayForDate?.name ?? '') !== holidaySlug) {
-			const params = new URLSearchParams(searchParams)
-			params.delete('holiday')
-			redirect(`/?${params.toString()}`)
-		}
-
-		// If it is the holiday and matches the next occurrence, remove the date param for stable URL
-		if (holidayInfo) {
-			const nextDate = getNextOccurrence(holidayInfo.name)
-			if (nextDate === dateParam) {
-				const params = new URLSearchParams(searchParams)
-				params.delete('date')
-				redirect(`/?${params.toString()}`)
-			}
-		}
-	}
 
 	if (holidayInfo && !date) {
 		const nextDate = getNextOccurrence(holidayInfo.name)
