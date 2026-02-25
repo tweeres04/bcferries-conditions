@@ -114,9 +114,6 @@ export async function generateMetadata({
 	return {
 		title,
 		description,
-		alternates: {
-			canonical: canonicalUrl,
-		},
 		openGraph: {
 			title,
 			description,
@@ -225,6 +222,13 @@ export default async function Home({ searchParams }: Props) {
 
 	return (
 		<>
+			{/*
+			 * Next.js has a bug where alternates.canonical strips query params when
+			 * the pathname is "/" (it returns result.origin instead of result.href).
+			 * See: node_modules/next/dist/lib/metadata/resolvers/resolve-url.js
+			 * Rendering the canonical tag manually bypasses this bug entirely.
+			 */}
+			<link rel="canonical" href={canonicalUrl} />
 			<script
 				type="application/ld+json"
 				dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }}
