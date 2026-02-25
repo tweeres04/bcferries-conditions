@@ -272,6 +272,13 @@ export default async function Home({ searchParams }: Props) {
 				<BrowseBusiestTimesCTA />
 
 				<div className="text-sm text-gray-600">
+					New to BC Ferries?{' '}
+					<Link href="/articles" className="content-link">
+						Read our travel guides →
+					</Link>
+				</div>
+
+				<div className="text-sm text-gray-600">
 					Finding this useful?{' '}
 					<a
 						href={process.env.NEXT_PUBLIC_STRIPE_DONATION_URL}

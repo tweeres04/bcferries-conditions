@@ -94,8 +94,38 @@ export default function BusiestFerryTimesPage({ params }: Props) {
 		? getRouteBySlug(oppositeRouteSlug)
 		: undefined
 
+	const breadcrumbSchema = {
+		'@context': 'https://schema.org',
+		'@type': 'BreadcrumbList',
+		itemListElement: [
+			{
+				'@type': 'ListItem',
+				position: 1,
+				name: 'Home',
+				item: 'https://bcferries-conditions.tweeres.ca',
+			},
+			{
+				'@type': 'ListItem',
+				position: 2,
+				name: 'Busiest Ferry Times',
+				item: 'https://bcferries-conditions.tweeres.ca/busiest-ferry-times',
+			},
+			{
+				'@type': 'ListItem',
+				position: 3,
+				name: `${routeInfo.fromShort} to ${routeInfo.toShort} - ${dayCapitalized}`,
+				item: `https://bcferries-conditions.tweeres.ca/busiest-ferry-times/${route}/${day}`,
+			},
+		],
+	}
+
 	return (
-		<div className="container mx-auto px-4 py-8 max-w-4xl">
+		<>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+			/>
+			<div className="container mx-auto px-4 py-8 max-w-4xl">
 			<Breadcrumb className="mb-4">
 				<BreadcrumbList>
 					<BreadcrumbItem>
@@ -190,6 +220,7 @@ export default function BusiestFerryTimesPage({ params }: Props) {
 			</div>
 
 			<Footer />
-		</div>
+			</div>
+		</>
 	)
 }

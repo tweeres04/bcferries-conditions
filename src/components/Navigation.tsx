@@ -7,6 +7,7 @@ const links = [
 	{ href: '/', label: 'Should I Reserve?' },
 	{ href: '/busiest-ferry-times', label: 'Busiest Times' },
 	{ href: '/history', label: 'History' },
+	{ href: '/articles', label: 'Articles' },
 ]
 
 export default function Navigation() {

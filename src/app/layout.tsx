@@ -16,6 +16,13 @@ export const metadata: Metadata = {
 	},
 }
 
+const websiteSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'WebSite',
+	name: 'BC Ferries Conditions Analytics',
+	url: 'https://bcferries-conditions.tweeres.ca',
+}
+
 export default function RootLayout({
 	children,
 }: Readonly<{
@@ -24,6 +31,10 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={poppins.className}>
+				<script
+					type="application/ld+json"
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+				/>
 				<Script
 					async
 					src="https://www.googletagmanager.com/gtag/js?id=G-F7KKD021M0"

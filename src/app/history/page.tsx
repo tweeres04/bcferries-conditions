@@ -78,8 +78,32 @@ export default async function History({ searchParams }: Props) {
 	]
 	const dayName = dayNames[dow]
 
+	const breadcrumbSchema = {
+		'@context': 'https://schema.org',
+		'@type': 'BreadcrumbList',
+		itemListElement: [
+			{
+				'@type': 'ListItem',
+				position: 1,
+				name: 'Home',
+				item: 'https://bcferries-conditions.tweeres.ca',
+			},
+			{
+				'@type': 'ListItem',
+				position: 2,
+				name: 'History',
+				item: 'https://bcferries-conditions.tweeres.ca/history',
+			},
+		],
+	}
+
 	return (
-		<div className="container mx-auto px-2 space-y-10">
+		<>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+			/>
+			<div className="container mx-auto px-2 space-y-10">
 			<div className="py-1">
 				<SelectRoute
 					selectRoute={selectValue('/history', 'route')}
@@ -136,6 +160,7 @@ export default async function History({ searchParams }: Props) {
 			</div>
 
 			<Footer />
-		</div>
+			</div>
+		</>
 	)
 }
