@@ -1,0 +1,8 @@
+# Scrape BC Ferries every 15 minutes
+*/15 * * * * curl -s -X POST -H "Authorization: Bearer $CRON_API_KEY" http://bcferries-conditions-analytics:3000/api/store_entries
+
+# Daily backup at 2am
+0 2 * * * pg_dump -h db -U $PGUSER -d $PGDATABASE -Fc > /backups/bcferries_$(date +\%Y\%m\%d).dump 2>&1
+
+# Clean up local backups older than 30 days at 4am
+0 4 * * * find /backups -name "*.dump" -mtime +30 -delete
