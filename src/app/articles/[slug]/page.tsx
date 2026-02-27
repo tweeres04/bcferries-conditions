@@ -6,6 +6,8 @@ import Link from 'next/link'
 import Footer from '@/components/Footer'
 import { format, parseISO } from 'date-fns'
 import { tz } from '@date-fns/tz'
+import ReservationStats from '../ReservationStats'
+import ArticleCta from '../ArticleCta'
 
 type Props = {
 	params: { slug: string }
@@ -42,11 +44,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 			url: `https://bcferries-conditions.tweeres.ca/articles/${params.slug}`,
 			type: 'article',
 			publishedTime: post.date,
+			...(post.dateModified && { modifiedTime: post.dateModified }),
 		},
 	}
 }
 
-export default function BlogPost({ params }: Props) {
+export default async function BlogPost({ params }: Props) {
 	const post = getBlogPostBySlug(params.slug)
 
 	if (!post) {
@@ -61,6 +64,7 @@ export default function BlogPost({ params }: Props) {
 				headline: post.title,
 				description: post.description,
 				datePublished: post.date,
+				...(post.dateModified && { dateModified: post.dateModified }),
 				author: {
 					'@type': 'Person',
 					name: 'Tyler Weeres',
@@ -131,7 +135,13 @@ export default function BlogPost({ params }: Props) {
 						</time>
 					</header>
 
-					<MDXRemote source={post.content} />
+					<MDXRemote
+						source={post.content}
+						components={{
+							ArticleCta,
+							ReservationStats,
+						}}
+					/>
 
 					{post.faqs && post.faqs.length > 0 && (
 						<section className="mt-12">

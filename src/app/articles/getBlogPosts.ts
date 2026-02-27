@@ -12,6 +12,7 @@ export type BlogPostMeta = {
 	title: string
 	description: string
 	date: string
+	dateModified?: string
 	keywords?: string[]
 	faqs?: FAQ[]
 }
@@ -42,6 +43,7 @@ export function getAllBlogPostMeta(): BlogPostMeta[] {
 				title: data.title,
 				description: data.description,
 				date: data.date,
+				dateModified: data.dateModified,
 				keywords: data.keywords,
 				faqs: data.faqs,
 			}
@@ -62,6 +64,7 @@ export function getBlogPostBySlug(slug: string): BlogPost | null {
 			title: data.title,
 			description: data.description,
 			date: data.date,
+			dateModified: data.dateModified,
 			keywords: data.keywords,
 			faqs: data.faqs,
 			content,
