@@ -11,7 +11,8 @@
 		"test": "vitest run",
 		"test:ui": "vitest --ui",
 		"schema:push": "dotenvx run --env-file=.env.local -- drizzle-kit push:pg",
-		"schema:pull": "dotenvx run --env-file=.env.local -- drizzle-kit introspect:pg"
+		"schema:pull": "dotenvx run --env-file=.env.local -- drizzle-kit introspect:pg",
+		"deploy": "./deploy.sh"
 	},
 	"dependencies": {
 		"@date-fns/tz": "^1.2.0",
