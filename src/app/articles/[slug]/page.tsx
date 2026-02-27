@@ -13,13 +13,17 @@ type Props = {
 	params: { slug: string }
 }
 
-export const dynamicParams = false
+// Allow slugs not in generateStaticParams to render on-demand
+export const dynamicParams = true
 
 export async function generateStaticParams() {
 	const posts = getAllBlogPostMeta()
-	return posts.map((post) => ({
-		slug: post.slug,
-	}))
+	return posts
+		.map((post) => ({ slug: post.slug }))
+		// should-you-reserve uses <ReservationStats /> which queries the DB at render time.
+		// Exclude it from static pre-rendering so it renders on-demand at request time
+		// instead of failing with ECONNREFUSED during Docker builds.
+		.filter((p) => p.slug !== 'should-you-reserve')
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
