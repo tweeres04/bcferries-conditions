@@ -38,6 +38,7 @@ next-env.d.ts
 
 pull_db_to_dev.json
 bcferries.bak
+*.dump
 
 # opencode sessions
 session-*.md
