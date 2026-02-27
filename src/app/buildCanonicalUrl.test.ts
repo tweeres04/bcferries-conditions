@@ -105,13 +105,30 @@ describe('buildCanonicalUrl', () => {
 	})
 
 	describe('date only', () => {
-		it('includes date param when no day or holiday', () => {
+		it('canonicalizes past date to day-of-week', () => {
+			// 2025-12-21 is a Sunday in the past — should canonicalize to day-of-week
+			// to avoid Google indexing stale date-specific URLs as separate pages
+			expect(buildCanonicalUrl({ date: '2025-12-21' })).toBe(
+				`${BASE_URL}?day=sunday`
+			)
+		})
+
+		it('includes route with past date canonicalized to day-of-week', () => {
+			const result = buildCanonicalUrl({
+				route: 'TSA-SWB',
+				date: '2025-12-21',
+			})
+			expect(result).toBe(`${BASE_URL}?route=TSA-SWB&day=sunday`)
+		})
+
+		it('keeps today or future date as-is', () => {
+			// 2026-03-15 is a future Sunday — keep the date so it can be a distinct page
 			expect(buildCanonicalUrl({ date: '2026-03-15' })).toBe(
 				`${BASE_URL}?date=2026-03-15`
 			)
 		})
 
-		it('includes route with date', () => {
+		it('includes route with future date kept as-is', () => {
 			const result = buildCanonicalUrl({
 				route: 'TSA-SWB',
 				date: '2026-03-15',
