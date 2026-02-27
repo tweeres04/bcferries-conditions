@@ -3,8 +3,8 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-const links = [
-	{ href: '/', label: 'Should I Reserve?' },
+const links: { href: string; label: string; mobileLabel?: string }[] = [
+	{ href: '/', label: 'Should I Reserve?', mobileLabel: 'Reserve?' },
 	{ href: '/busiest-ferry-times', label: 'Busiest Times' },
 	{ href: '/history', label: 'History' },
 	{ href: '/articles', label: 'Articles' },
@@ -29,13 +29,14 @@ export default function Navigation() {
 							<Link
 								key={link.href}
 								href={link.href}
-								className={`text-sm sm:text-base no-underline ${
+								className={`text-sm sm:text-base no-underline whitespace-nowrap ${
 									isActive
 										? 'text-black font-medium'
 										: 'text-gray-600 hover:text-black'
 								}`}
 							>
-								{link.label}
+								<span className="sm:hidden">{link.mobileLabel ?? link.label}</span>
+								<span className="hidden sm:inline">{link.label}</span>
 							</Link>
 						)
 					})}
