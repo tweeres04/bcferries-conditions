@@ -1,25 +1,42 @@
-# Use postgres/example user/password credentials
-version: '3.9'
-
 services:
-  db:
-    image: postgres
+  app:
+    build:
+      context: .
+      args:
+        - NEXT_PUBLIC_STRIPE_DONATION_URL=${NEXT_PUBLIC_STRIPE_DONATION_URL}
     restart: always
-    # set shared memory limit when using docker-compose
-    shm_size: 128mb
-    # or set shared memory limit when deploy via swarm stack
-    #volumes:
-    #  - type: tmpfs
-    #    target: /dev/shm
-    #    tmpfs:
-    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
     environment:
-      POSTGRES_PASSWORD: bcferries
+      - PGHOST=db
+      - PGSSL=false
+    volumes:
+      - next_cache:/app/.next/cache
+    depends_on:
+      - db
+
+  db:
+    image: postgres:17
+    restart: always
+    shm_size: 128mb
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${PGDATABASE}
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
     ports:
       - 5433:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8081:8080
+volumes:
+  postgres_data:
+  next_cache:
+
+networks:
+  default:
+    external: true
+    name: proxy
