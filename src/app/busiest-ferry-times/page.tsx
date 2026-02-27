@@ -88,7 +88,12 @@ export default function BusiestFerryTimesHub() {
 
 			<div className="prose max-w-none mb-16">
 				<p>
-					See which sailings typically fill up so you know when to book ahead
+					See which sailings typically fill up so you know when to{' '}
+					<a
+						href="https://www.bcferries.com/routes-fares/reservations"
+					>
+						book ahead
+					</a>{' '}
 					and when you can probably just show up.
 				</p>
 			</div>
