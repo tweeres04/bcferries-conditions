@@ -1,37 +1,67 @@
 # BC Ferries Conditions: Growth & Monetization Plan
 
-**Date:** January 30, 2026  
+**Date:** January 30, 2026 (last updated Feb 27, 2026)
 **Goal:** Grow traffic via pSEO, improve UX, and prepare for monetization
+
+---
+
+## Table of contents
+
+- [Executive summary](#executive-summary)
+- [Current state analysis](#current-state-analysis)
+- [Research: which routes to add?](#research-which-routes-to-add)
+- [Implementation plan](#implementation-plan)
+  - [Phase 1: Internal linking improvements](#phase-1-internal-linking-improvements--complete)
+  - [Phase 2: Route expansion](#phase-2-route-expansion--complete)
+  - [Phase 3: MDX blog setup](#phase-3-mdx-blog-setup--complete)
+- [Monetization strategy](#monetization-strategy)
+- [UX improvements](#ux-improvements-future-considerations)
+- [Success metrics](#success-metrics)
+- [Implementation status](#implementation-status)
+- [Technical notes](#technical-notes)
+- [Appendix: internal linking analysis](#appendix-internal-linking-analysis)
+- [Questions & decisions log](#questions--decisions-log)
+- [Phase 4: SEO strengthening](#phase-4-seo-strengthening--complete)
+- [Phase 5: Reddit backlink campaign](#phase-5-reddit-backlink-campaign)
+- [Next steps](#next-steps)
 
 ---
 
 ## Executive Summary
 
-This document outlines a three-phase plan to grow the BC Ferries Conditions site from zero traffic to a monetizable asset through:
+This document outlines a plan to grow the BC Ferries Conditions site from zero traffic to a monetizable asset through:
 
 1. **Internal linking improvements** ✅ Complete - Better SEO and user experience
 2. **Route expansion** ✅ Complete - 3x the pSEO footprint by adding high-demand routes
-3. **Blog setup** - Capture informational search queries
+3. **Blog setup** ✅ Complete - 5 articles live targeting informational queries
+4. **SEO strengthening** ✅ Complete - Canonical fixes, structured data, outbound links, article CTAs
+5. **Reddit backlink campaign** - Pending timing (next long weekend / start of summer)
 
-**Current status (Feb 2026):** Phases 1 and 2 complete. 49 busiest-ferry-times pages live, 5 new routes collecting data. Phase 3 (blog) is next.
+**Current status (Feb 27, 2026):** Phases 1-4 complete. ~2,800 Search Console impressions/month, 2 clicks. `/articles/should-you-reserve` at position 23 with 170 impressions — within striking distance of page 1. Reddit campaign ready to execute.
 
 ---
 
 ## Current State Analysis
 
 ### Traffic & Routes
-- **Current traffic:** ~20 users/month (Feb 2026), growing organically
+- **Current traffic:** ~2,800 impressions/month in Search Console (Feb 2026), 2 clicks — impressions growing fast, CTR the bottleneck
 - **Routes tracked:** 7 (SWB-TSA, TSA-SWB, NAN-HSB, HSB-LNG, LNG-HSB, TSA-DUK, DUK-TSA)
 - **pSEO pages:** 49 (busiest-ferry-times pages across all routes and days)
 - **Total indexable pages:** ~200+ (including sitemap variations, holiday pages, route combinations)
 
 ### SEO Foundation
 - ✅ Dynamic metadata with OpenGraph
-- ✅ JSON-LD structured data (BreadcrumbList, FAQPage)
-- ✅ Comprehensive sitemap
+- ✅ JSON-LD structured data (BreadcrumbList, FAQPage, Article)
+- ✅ Comprehensive sitemap (with manual `&amp;` escaping workaround for Next.js bug)
 - ✅ Holiday tracking and pages
 - ✅ Internal linking (footer, day navigation, opposite direction links, history CTAs, clickable rows)
-- ❌ No blog/content hub
+- ✅ Blog/content hub — 5 articles live at `/articles`
+- ✅ Canonical tags fixed (Next.js bug workaround for query params)
+- ✅ `/should-i-reserve` 301 redirect fixed (was returning 200 due to static pre-rendering)
+- ✅ Past dates canonicalize to day-of-week (`?date=2026-01-01` → `?day=wednesday`)
+- ✅ Outbound links to bcferries.com reservations page (articles + busiest-ferry-times pages)
+- ✅ `dateModified` in Article schema and OpenGraph for updated articles
+- ✅ IndexNow key for faster indexing
 
 ---
 
@@ -190,11 +220,11 @@ Fix any type errors or issues before deployment.
 
 ---
 
-### Phase 3: MDX Blog Setup
+### Phase 3: MDX Blog Setup ✅ Complete
 
 **Effort:** ~6 hours (infrastructure + 5 initial posts)  
 **Impact:** Medium-High (captures informational queries)  
-**Priority:** Medium
+**Status:** Live as of Feb 2026
 
 #### Technology Stack
 - **`@next/mdx`** - MDX support for Next.js
@@ -418,21 +448,120 @@ From `getDailySummary.ts`:
 
 ---
 
+## Phase 4: SEO Strengthening ✅ Complete
+
+**Effort:** ~1 session  
+**Impact:** Medium (improved CTR, structured data, link equity signals)  
+**Status:** Complete as of Feb 27, 2026
+
+### What was done
+
+| Task | Details |
+|------|---------|
+| Rewrote `should-you-reserve` article | Answer-first structure, better keyword targeting ("reservation" not just "reserve"), 6 FAQs targeting long-tail queries, no AI-sounding copy |
+| `ReservationStats` component | Async server component fetching live Friday fill rates from DB, filtered to Moderate+ risk sailings, cached daily via `unstable_cache`, with Suspense skeleton |
+| `ArticleCta` component | Reusable CTA card added to all 5 articles at natural stopping points |
+| `dateModified` support | New frontmatter field emitted in Article schema and OpenGraph; `should-you-reserve` uses it |
+| Outbound links to bcferries.com | Links to `/routes-fares/reservations` added in `should-you-reserve.mdx`, `/busiest-ferry-times/page.tsx`, and `/busiest-ferry-times/[route]/[day]/page.tsx`. Cite Sources = +40% GEO visibility per Princeton research. |
+| Mobile nav fix | `whitespace-nowrap` + `mobileLabel` prop; "Should I Reserve?" → "Reserve?" on small screens |
+
+### Next.js bugs discovered and worked around
+
+1. **`alternates.canonical` strips query params when pathname is "/"** — Workaround: render `<link rel="canonical">` manually in JSX
+2. **Next.js does NOT XML-escape sitemap URLs** — Manual `.replace(/&/g, '&amp;')` in `sitemap.ts`. Do NOT remove.
+3. **`redirect()` in statically pre-rendered pages returns 200, not 301** — Fixed by replacing `page.tsx` with `route.ts` handler for `/should-i-reserve`
+
+---
+
+## Phase 5: Reddit Backlink Campaign
+
+**Effort:** ~30 minutes to post, ongoing for comments  
+**Impact:** Medium (referral traffic, brand awareness, indirect SEO signal)  
+**Status:** Ready to execute — pick timing around a long weekend or start of summer
+
+### Background
+
+Reddit links are `nofollow` so they don't pass direct link equity. The value is:
+- Referral traffic that generates real usage signals (time on site, return visits)
+- Brand searches after people see the site name on Reddit
+- Google indexes Reddit posts, so the site name appears in more search contexts
+- More web mentions = more likely to be cited by AI search engines
+
+### Comparable tools that got good reception
+
+| Tool | Subreddit | Score | Reception |
+|------|-----------|-------|-----------|
+| nextsailing.ca (SMS alerts for sold-out sailings) | r/VictoriaBC | 232 (96% upvoted) | "You're a hero" |
+| Ferry Alert app (push notifications for sold-out sailings) | r/VancouverIsland | 118 (98% upvoted) | "The heroes we need" |
+
+Both tools solve a different problem (grabbing cancellations on sold-out sailings). Our tool is complementary — it helps you decide whether to reserve in the first place.
+
+### Target subreddits
+
+| Subreddit | Subscribers | Priority |
+|-----------|-------------|----------|
+| r/VictoriaBC | 165K | First — most ferry activity, nextsailing post hit 232 upvotes here |
+| r/VancouverIsland | 58K | Second — smaller, good fallback if VictoriaBC doesn't land |
+| r/vancouver | 615K | Third — bigger, harder to break through |
+
+### Post copy
+
+**Title:** I've been tracking BC Ferries capacity every 15 minutes for months. Here's which sailings actually fill up.
+
+**Image:** Screenshot of `/busiest-ferry-times/tsawwassen-to-swartz-bay/friday` showing the fill rate table with red/yellow percentages. Friday TSA-SWB has the most dramatic data and is the most relatable route. Upload as an image post so it shows as a thumbnail in the feed.
+
+**Body:**
+
+> Last year I didn't bother reserving a 7am ferry on a Thursday because I figured it'd be fine. Ended up waiting two sailings. That was annoying enough that I started collecting capacity data from BC Ferries every 15 minutes to see which sailings actually fill up and which ones don't.
+>
+> It shows how often each sailing fills up based on the last 12 weeks of real data, broken down by route and day of the week. So instead of guessing, you can just look at whether Friday's 5pm sailing fills up 80% of the time (reserve) or 5% of the time (save the $20).
+>
+> It covers Tsawwassen-Swartz Bay and Horseshoe Bay-Nanaimo in both directions.
+>
+> https://bcferries-conditions.tweeres.ca
+>
+> Completely free, no signup, no ads. Just the data.
+>
+> Happy to hear feedback or suggestions for what else would be useful.
+
+### Why this framing works
+
+- **Origin story up front.** The Thursday 7am anecdote is relatable and explains why the tool exists without sounding like a pitch.
+- **Leads with data, not the tool.** "Which sailings actually fill up" is interesting on its own.
+- **Concrete example.** "Friday's 5pm sailing fills up 80% of the time" makes the value obvious in one sentence.
+- **No marketing language.** No "analytics platform", no "data-driven decisions", no CTAs beyond the bare URL.
+- **Invites feedback.** Turns promotion into a conversation.
+
+### In-comment play
+
+Keep Ferry Alert and NextSailing in your back pocket. If someone asks in the comments "is there anything for grabbing sold-out sailings?", mention them naturally there. Don't include them in the post itself — it reads as trying too hard.
+
+### Timing
+
+Post before a busy travel period when ferry anxiety is top of mind:
+- Week before a long weekend (Victoria Day, Canada Day, Labour Day)
+- Early June (start of summer travel season)
+- Spring break
+
+---
+
 ## Next Steps
 
-**Immediate priority: Phase 3 (Blog Setup)**
+**Immediate priority: Phase 5 (Reddit campaign)**
 
-See Phase 3 section above for full implementation details. Key tasks:
-1. Install MDX dependencies (`@next/mdx`, `@mdx-js/loader`)
-2. Create blog infrastructure (`src/app/blog/`, `src/content/blog/`)
-3. Write 5 initial posts targeting informational keywords
-4. Update sitemap to include blog URLs
-5. Add blog navigation link
+- Take a screenshot of `/busiest-ferry-times/tsawwassen-to-swartz-bay/friday` showing the fill rate table
+- Post to r/VancouverIsland first (see Phase 5 for full copy)
+- Time it before a long weekend or early June (start of summer)
+- Post to r/VictoriaBC a few weeks later if the first post does well
 
-**Estimated time:** ~6 hours
+**Watch and measure:**
+- Check Search Console in 2-3 weeks for position/CTR changes on "bc ferries reservation" cluster
+- `/articles/should-you-reserve` at position 23 with 170 impressions — next goal is page 1
 
-**Long-term (after blog):**
-- Monitor route expansion data collection (4-6 weeks from Feb 2026)
-- Consider UX improvements (push notifications, email alerts, etc.)
+**Lower priority / future:**
+- Add `dateModified` to remaining 4 articles (infrastructure is built, just needs frontmatter)
+- Link "Check current capacity" (line 63 of `should-you-reserve.mdx`) to homepage
+- Consider a "current conditions" page (hard to compete with bcferries.com directly)
+- Monitor new route data (HSB-LNG, TSA-DUK, etc.) as it accumulates — will unlock more `ReservationStats` content
 - Scale monetization as traffic grows (see MONETIZATION.md)
 - Optional: Self-hosting migration to save $15/mo (see SELF_HOSTING_MIGRATION.md)
