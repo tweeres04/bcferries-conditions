@@ -23,7 +23,7 @@ services:
     environment:
       - TZ=America/Vancouver
     volumes:
-      - ~/backups/bcfca:/backups
+      - ${BACKUP_PATH}:/backups
     depends_on:
       - bcferries-conditions-analytics
       - db
