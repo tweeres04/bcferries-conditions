@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { Heart } from 'lucide-react'
 import FeedbackDialog from './FeedbackDialog'
+import DonateLink from './DonateLink'
 
 export default function Footer() {
 	return (
@@ -42,19 +42,7 @@ export default function Footer() {
 					</Link>
 				</div>
 			</div>
-			<div className="mb-6 text-sm text-gray-600">
-				Finding this useful?{' '}
-				<a
-					href={process.env.NEXT_PUBLIC_STRIPE_DONATION_URL}
-					className="content-link"
-					target="_blank"
-					rel="noopener"
-				>
-					Support the project{' '}
-					{/* Lucide icons are display: block by default */}
-					<Heart size={14} fill="currentColor" className="inline" />
-				</a>
-			</div>
+			<DonateLink location="footer" className="mb-6" />
 			<p>
 				By{' '}
 				<a

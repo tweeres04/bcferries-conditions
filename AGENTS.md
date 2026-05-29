@@ -164,3 +164,58 @@ Required variables:
 4.  **Tab Indentation**: Do not use spaces for indentation.
 5.  **Proactive Improvements**: If you see an opportunity to add a unit test or improve type safety, do so.
 6.  **Environment Variables**: Use `process.env.PGHOST`, `PGDATABASE`, etc. for DB connections. In local dev, these are often loaded via `.env.local` or `dotenvx`.
+
+---
+
+## 📊 Analytics Tracking — Mixpanel
+
+This project uses **Mixpanel** for product analytics, alongside the existing GA4 and Simple Analytics scripts (which stay for pageview-level data). Don't add other product-analytics SDKs without explicit instruction.
+
+⛔ **Read this section before adding or changing any tracking.**
+
+### Tech stack
+
+| Detail | Value |
+|---|---|
+| Platform | Next.js 14 (App Router), client-side |
+| Mixpanel SDK | `mixpanel-browser` |
+| Tracking method | Client-side |
+| CDP | None |
+| Identity | **None** — this is an anonymous public site with no user accounts. Do not add `identify()`/`reset()`; rely on Mixpanel's auto-generated device ID. |
+| Consent gating | Not required (audience is overwhelmingly BC/Canada, no EU/CA gating) |
+| Token location | `.env.local` → `NEXT_PUBLIC_MIXPANEL_TOKEN` (also wired as a build arg in `Dockerfile` + `docker-compose.yml` for production) |
+
+### Initialization
+
+Mixpanel is initialized **once** in `src/lib/mixpanel.ts` (`initMixpanel()`), called from the client component `src/components/MixpanelProvider.tsx`, which is mounted in `src/app/layout.tsx`. Do not init Mixpanel anywhere else or create extra instances. Always track through the `trackEvent(name, properties)` helper in `src/lib/mixpanel.ts` — don't import `mixpanel-browser` directly in feature files. (`mixpanel-browser` ships its own TypeScript types, so there's no `@types/mixpanel-browser` dependency.)
+
+Init config of note (all in `src/lib/mixpanel.ts`):
+- **Pageviews:** `track_pageview: 'url-with-path'` — path-only. The should-i-reserve form encodes its steps in the query string, so this avoids a pageview per step. Autocapture's own pageview is disabled to prevent double-counting.
+- **Heatmaps:** powered by `autocapture` (click/input/scroll/submit enabled).
+- **Session Replay:** `record_sessions_percent: 100` (records all sessions — dial down as traffic grows).
+- **Recording privacy:** text and inputs are **unmasked** (`record_mask_all_text/inputs: false`) so recordings are readable, **except** `input[type="email"]` (the feedback email field) which stays masked to avoid storing PII. Add a selector to `record_mask_input_selector` if you introduce other sensitive fields.
+
+### Naming conventions
+
+- Event names: `snake_case`, past tense (e.g. `daily_summary_viewed`).
+- Property names: `snake_case`, full words, no abbreviations. Boolean props use an `is_`/`has_` prefix.
+- Send numbers unquoted. Omit properties that don't apply — never send `null` or `''`.
+
+### Current events
+
+| Event | Trigger | Key properties | File |
+|---|---|---|---|
+| `daily_summary_viewed` | Route + date/day selected and the 12-week "typical sailings" table renders (value moment) | `route`, `day_of_week`, `sailing_count`, `is_holiday`, `has_specific_date` | `src/app/should-i-reserve/ShouldIReserveForm.tsx` → `src/components/TrackReserveView.tsx` |
+| `sailing_forecast_viewed` | A specific sailing is selected and its historical fill data renders | `route`, `sailing_time`, `day_of_week`, `is_holiday`, `history_weeks` | `src/app/should-i-reserve/ShouldIReserveForm.tsx` → `src/components/TrackReserveView.tsx` |
+| `donation_link_clicked` | Visitor clicks the "Support the project" outbound Stripe link | `location` (`home` / `footer` / `busiest_times`) | `src/components/DonateLink.tsx` |
+
+These two states are mutually exclusive in the UI. Because route/date/sailing selection is a server-action soft navigation, the events fire from a `useEffect` in `TrackReserveView` keyed on a signature of the event + properties, so they re-fire on each re-render rather than only on full page load.
+
+### Adding a new event
+
+1. Check the table above — reuse an existing event/property rather than duplicating.
+2. Name it `snake_case`, past tense; define only properties available at fire time.
+3. Track it via `trackEvent()` after the action/state it represents is real (e.g. the result actually rendered), not on raw button click.
+4. No PII in properties (no emails, names, IPs).
+5. Add a row to the table above.
+6. Verify in Mixpanel Live View (events log to the console in dev — `debug` is on outside production).

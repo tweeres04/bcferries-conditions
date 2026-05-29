@@ -5,7 +5,6 @@ import { entries } from '@/schema'
 import { sql } from 'drizzle-orm'
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { Heart } from 'lucide-react'
 import { getEntriesForDow } from './should-i-reserve/getEntriesForDow'
 import ShouldIReserveForm from './should-i-reserve/ShouldIReserveForm'
 import { getRouteByCode } from './should-i-reserve/routeMapping'
@@ -28,6 +27,7 @@ import { resolveRedirect, resolveDate } from './resolveRedirect'
 import RouteDisplay from './should-i-reserve/RouteDisplay'
 import BrowseBusiestTimesCTA from './busiest-ferry-times/BrowseBusiestTimesCTA'
 import Footer from '@/components/Footer'
+import DonateLink from '@/components/DonateLink'
 import { buildCanonicalUrl } from './buildCanonicalUrl'
 
 type Props = {
@@ -282,19 +282,7 @@ export default async function Home({ searchParams }: Props) {
 					</Link>
 				</div>
 
-				<div className="text-sm text-gray-600">
-					Finding this useful?{' '}
-					<a
-						href={process.env.NEXT_PUBLIC_STRIPE_DONATION_URL}
-						className="content-link"
-						target="_blank"
-						rel="noopener"
-					>
-						Support the project{' '}
-						{/* Lucide icons are display: block by default */}
-						<Heart size={14} fill="currentColor" className="inline" />
-					</a>
-				</div>
+				<DonateLink location="home" />
 
 				{holidayInfo && (
 					<div className="max-w-2xl mx-auto">

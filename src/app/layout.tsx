@@ -2,6 +2,7 @@ import { Poppins } from 'next/font/google'
 import Script from 'next/script'
 import { Metadata } from 'next'
 import Navigation from '@/components/Navigation'
+import MixpanelProvider from '@/components/MixpanelProvider'
 import './globals.css'
 
 const poppins = Poppins({ subsets: ['latin'], weight: '400' })
@@ -50,6 +51,7 @@ export default function RootLayout({
 						}}
 					></script>
 				) : null}
+				<MixpanelProvider />
 				<Navigation />
 				{children}
 				<script

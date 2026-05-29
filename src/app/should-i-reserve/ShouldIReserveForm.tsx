@@ -19,6 +19,17 @@ import { selectValue } from '../selectValue'
 import { ReactNode, Suspense } from 'react'
 import DailySummaryTable from './DailySummaryTable'
 import DailySummaryTableSkeleton from './DailySummaryTableSkeleton'
+import TrackReserveView from '@/components/TrackReserveView'
+
+const dowNames = [
+	'sunday',
+	'monday',
+	'tuesday',
+	'wednesday',
+	'thursday',
+	'friday',
+	'saturday',
+]
 
 type Props = {
 	title: ReactNode
@@ -56,8 +67,52 @@ export default function ShouldIReserveForm({
 			: undefined)
 	const holiday = date ? getHolidayForDate(date) : undefined
 
+	// Value-moment tracking. These two states mirror the two payoffs the UI
+	// renders below and are mutually exclusive (the daily summary table only
+	// shows before a sailing is picked; the specific forecast only shows after).
+	const dailySummaryShown =
+		dow !== undefined && !!route && !sailing && sailings.length > 0
+
+	const sailingForecastShown =
+		!!date &&
+		!!sailing &&
+		dow !== undefined &&
+		!!dowEntries &&
+		!dowEntries.every((de) => de.full === null)
+
+	const trackingEvent = sailingForecastShown
+		? 'sailing_forecast_viewed'
+		: dailySummaryShown
+			? 'daily_summary_viewed'
+			: null
+
+	const trackingProperties: Record<string, string | number | boolean> | null =
+		trackingEvent === 'sailing_forecast_viewed'
+			? {
+					route,
+					sailing_time: sailing as string,
+					day_of_week: dowNames[dow as number],
+					is_holiday: !!holiday,
+					history_weeks: (dowEntries as { full: unknown }[]).length,
+				}
+			: trackingEvent === 'daily_summary_viewed'
+				? {
+						route,
+						day_of_week: dowNames[dow as number],
+						sailing_count: sailings.length,
+						is_holiday: !!holiday,
+						has_specific_date: !!date,
+					}
+				: null
+
 	return (
 		<div className="container mx-auto prose sm:prose-lg should-i-reserve">
+			{trackingEvent && trackingProperties ? (
+				<TrackReserveView
+					event={trackingEvent}
+					properties={trackingProperties}
+				/>
+			) : null}
 			<h1 className="text-2xl sm:text-4xl mb-4 sm:mb-6 min-h-[96px] flex items-center">
 				<span>{title}</span>
 			</h1>
