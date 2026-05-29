@@ -38,6 +38,7 @@ type Props = {
 	dowEntries?: {
 		date: string
 		full: string | Date | null
+		tracked: boolean
 	}[]
 	date?: string
 	sailing?: string
@@ -78,7 +79,7 @@ export default function ShouldIReserveForm({
 		!!sailing &&
 		dow !== undefined &&
 		!!dowEntries &&
-		!dowEntries.every((de) => de.full === null)
+		dowEntries.some((de) => de.tracked)
 
 	const trackingEvent = sailingForecastShown
 		? 'sailing_forecast_viewed'
@@ -189,7 +190,7 @@ export default function ShouldIReserveForm({
 						</li>
 						{date && sailing && dow !== undefined ? (
 							<>
-								{dowEntries && dowEntries.every((de) => de.full === null) ? (
+								{dowEntries && dowEntries.every((de) => !de.tracked) ? (
 									<li>
 										<label>Historical data:</label>
 										<div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600 mt-2">

@@ -31,7 +31,17 @@ SELECT
 			and "full"
 		limit
 			1
-	) as full
+	) as full,
+	exists (
+		select
+			1
+		from
+			entries
+		where
+			date = date.date
+			and route = ${route}
+			and time = ${sailing}
+	) as tracked -- distinguishes "no data yet" from "tracked but never full"
 FROM
 	generate_series(
 		(select * from most_recent_weekday),
@@ -39,5 +49,5 @@ FROM
 		-interval '1 week'
 	) as "date"`
 
-	return db.execute<{ date: string; full: string }>(sqlQuery)
+	return db.execute<{ date: string; full: string; tracked: boolean }>(sqlQuery)
 }
