@@ -102,6 +102,23 @@ export function getNextOccurrence(name: string) {
 	return next?.observedDate
 }
 
+/**
+ * Returns the holiday a request should be treated as, or undefined if it shouldn't
+ * be treated as a holiday page. A holiday slug only "sticks" when the effective date
+ * actually falls within that holiday's window — otherwise (e.g. ?holiday=family-day&day=monday
+ * where that Monday isn't Family Day) we drop the holiday so the canonical URL doesn't
+ * funnel authority into a stale dated URL. With no date, the slug is taken at face value.
+ */
+export function getEffectiveHoliday(
+	holidaySlug: string | undefined,
+	date: string | undefined
+) {
+	const holidayInfo = holidaySlug ? getHolidayBySlug(holidaySlug) : undefined
+	if (!holidayInfo || !date) return holidayInfo
+	const matches = getHolidaySlug(getHolidayForDate(date)?.name ?? '') === holidaySlug
+	return matches ? holidayInfo : undefined
+}
+
 export function getHolidayForDate(date: string) {
 	const dow = getDay(date, { in: tz('America/Vancouver') }) as keyof typeof ranges
 	const holiday = holidays.find((h) => {

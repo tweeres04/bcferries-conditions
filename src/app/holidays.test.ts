@@ -5,6 +5,7 @@ import {
 	getNextOccurrence,
 	getHolidayBySlug,
 	getUniqueHolidays,
+	getEffectiveHoliday,
 } from './holidays'
 
 describe('getHolidaySlug', () => {
@@ -95,5 +96,29 @@ describe('getNextOccurrence', () => {
 		// New Year's Day 2026 is Jan 1 — in the past relative to Feb 11
 		// There is no 2027 entry, so should return undefined
 		expect(getNextOccurrence("New Year's Day")).toBeUndefined()
+	})
+})
+
+describe('getEffectiveHoliday', () => {
+	it('returns undefined when no holiday slug is provided', () => {
+		expect(getEffectiveHoliday(undefined, '2026-02-16')).toBeUndefined()
+	})
+
+	it('takes the slug at face value when no date is provided', () => {
+		expect(getEffectiveHoliday('family-day', undefined)?.slug).toBe('family-day')
+	})
+
+	it('keeps the holiday when the date falls in its window', () => {
+		// Feb 16, 2026 is Family Day
+		expect(getEffectiveHoliday('family-day', '2026-02-16')?.slug).toBe(
+			'family-day'
+		)
+	})
+
+	it('drops the holiday when the date does not match it', () => {
+		// This is the canonical-funnel fix: ?holiday=family-day with a date that
+		// isn't Family Day must NOT be treated as a holiday page, so the canonical
+		// resolves to an evergreen URL instead of a stale dated holiday URL.
+		expect(getEffectiveHoliday('family-day', '2026-06-15')).toBeUndefined()
 	})
 })

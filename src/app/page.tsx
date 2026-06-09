@@ -16,9 +16,8 @@ import {
 import {
 	getHolidayBySlug,
 	getNextOccurrence,
-	getHolidayForDate,
-	getHolidaySlug,
 	getUniqueHolidays,
+	getEffectiveHoliday,
 } from './holidays'
 import { redirect } from 'next/navigation'
 import { tz } from '@date-fns/tz'
@@ -51,18 +50,12 @@ export async function generateMetadata({
 		sailing,
 	} = searchParams
 	const routeInfo = route ? getRouteByCode(route) : undefined
-	const holidayInfo = holidaySlug ? getHolidayBySlug(holidaySlug) : undefined
 	const sailingTime = sailing ? formatTime(sailing) : undefined
 
 	const date = resolveDate(searchParams)
 
 	// If date doesn't match holiday, don't show holiday metadata
-	const effectiveHolidayInfo =
-		holidayInfo &&
-		date &&
-		getHolidaySlug(getHolidayForDate(date)?.name ?? '') !== holidaySlug
-			? undefined
-			: holidayInfo
+	const effectiveHolidayInfo = getEffectiveHoliday(holidaySlug, date)
 
 	let title = 'Should I reserve the BC ferry? - BC Ferries Conditions Analytics'
 	let description =
@@ -173,6 +166,10 @@ export default async function Home({ searchParams }: Props) {
 		}
 	}
 
+	// Mirror generateMetadata: only treat as a holiday page when the date actually
+	// falls in the holiday window, so the canonical never points to a stale dated URL.
+	const effectiveHolidayInfo = getEffectiveHoliday(holidaySlug, date)
+
 	const parsedDate = date
 		? parseISO(date, { in: tz('America/Vancouver') })
 		: undefined
@@ -214,7 +211,7 @@ export default async function Home({ searchParams }: Props) {
 		route,
 		sailing,
 		holidaySlug,
-		holidayInfo,
+		holidayInfo: effectiveHolidayInfo,
 		day,
 		date,
 		dateParam,
