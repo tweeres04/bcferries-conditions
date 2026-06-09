@@ -204,7 +204,7 @@ export default async function Home({ searchParams }: Props) {
 		routeInfo,
 		sailing,
 		day,
-		holidayName: holidayInfo?.name,
+		holidayName: effectiveHolidayInfo?.name,
 	})
 
 	const canonicalUrl = buildCanonicalUrl({
@@ -239,11 +239,11 @@ export default async function Home({ searchParams }: Props) {
 			<div className="container mx-auto max-w-2xl space-y-20 px-2 py-4">
 				<ShouldIReserveForm
 					title={
-						holidayInfo ? (
+						effectiveHolidayInfo ? (
 							<>
 								Should I reserve the{' '}
 								{routeInfo ? <RouteDisplay routeInfo={routeInfo} /> : 'ferry'}{' '}
-								on {holidayInfo.name}?
+								on {effectiveHolidayInfo.name}?
 							</>
 						) : routeInfo && day ? (
 							<>
@@ -281,7 +281,7 @@ export default async function Home({ searchParams }: Props) {
 
 				<DonateLink location="home" />
 
-				{holidayInfo && (
+				{effectiveHolidayInfo && (
 					<div className="max-w-2xl mx-auto">
 						<div className="text-sm text-gray-600">
 							<span className="text-gray-500">Other holidays:</span>{' '}
