@@ -1,9 +1,23 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { buildCanonicalUrl } from './buildCanonicalUrl'
 
 const BASE_URL = 'https://bcferries-conditions.tweeres.ca'
 
 describe('buildCanonicalUrl', () => {
+	// Pin "today" so past/future-date assertions don't rot as the real clock moves.
+	// Jan 1, 2026 keeps 2025-12-21 in the past and 2026-03-15 in the future, and
+	// leaves every holiday's next occurrence (Victoria Day, etc.) ahead of today.
+	const PINNED_DATE = new Date('2026-01-01T12:00:00-08:00')
+
+	beforeEach(() => {
+		vi.useFakeTimers()
+		vi.setSystemTime(PINNED_DATE)
+	})
+
+	afterEach(() => {
+		vi.useRealTimers()
+	})
+
 	describe('base cases', () => {
 		it('returns base URL when no params provided', () => {
 			expect(buildCanonicalUrl({})).toBe(BASE_URL)
