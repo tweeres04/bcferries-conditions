@@ -13,16 +13,13 @@ export function initMixpanel() {
 
 	mixpanel.init(token, {
 		debug: process.env.NODE_ENV !== 'production',
-		// Path-only pageviews. The should-i-reserve form encodes its steps in
-		// the query string, so 'url-with-path' avoids firing a pageview per step.
-		track_pageview: 'url-with-path',
 		// Avoid third-party cookies; keep our footprint to localStorage.
 		persistence: 'localStorage',
 		// Autocapture powers heatmaps (clicks) and captures inputs/scroll/submit.
-		// Pageviews are handled by track_pageview above, so disable them here to
-		// avoid double-counting.
 		autocapture: {
-			pageview: false,
+			// Path-only pageviews. The should-i-reserve form encodes its steps in
+			// the query string, so 'url-with-path' avoids firing a pageview per step.
+			pageview: 'url-with-path',
 			click: true,
 			input: true,
 			scroll: true,
