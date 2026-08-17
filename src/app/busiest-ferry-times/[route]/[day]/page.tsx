@@ -157,7 +157,7 @@ export default function BusiestFerryTimesPage({ params }: Props) {
 					Here&rsquo;s how often each {dayCapitalized} sailing fills up. Red
 					means it&rsquo;s usually full, so you might want to{' '}
 					<a
-						href="https://www.bcferries.com/routes-fares/reservations"
+						href="https://www.bcferries.com/RouteSelectionPage"
 					>
 						book ahead
 					</a>
